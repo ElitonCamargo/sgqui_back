@@ -1,11 +1,14 @@
 import mysql from 'mysql2/promise';
 import { db } from "../config/config.js";
 
-const cx = await mysql.createConnection({
+const pool = mysql.createPool({
     host: db.host,
     user: db.user,
     database: db.name,
-    password: db.password
+    password: db.password,
+    waitForConnections: true,
+    connectionLimit: 10, // ajuste o limite conforme necessário
+    queueLimit: 0
 });
 
-export default cx;
+export default pool;

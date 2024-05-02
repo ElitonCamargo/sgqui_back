@@ -1,9 +1,11 @@
-import cx from '../database/data.js';
+import pool from '../database/data.js';
 
 export const consultar = async (filtro = '') => {
     try {
+        const cx = await pool.getConnection();
         const cmdSql = 'SELECT * FROM nutriente WHERE nome LIKE ?;';
         const [dados, meta_dados] = await cx.query(cmdSql, [`%${filtro}%`]);
+        cx.release();
         return dados;
     } catch (error) {
         console.error('Erro ao consultar nutriente:', error);
@@ -13,8 +15,10 @@ export const consultar = async (filtro = '') => {
 
 export const consultarPorId = async (id) => {
     try {
+        const cx = await pool.getConnection();
         const cmdSql = 'SELECT * FROM nutriente WHERE id = ?;';
         const [dados, meta_dados] = await cx.query(cmdSql, [id]);
+        cx.release();
         return dados;
     } catch (error) {
         console.error('Erro ao consultar nutriente por ID:', error);
@@ -24,6 +28,7 @@ export const consultarPorId = async (id) => {
 
 export const cadastrar = async (nome, formula) => {
     try {
+        const cx = await pool.getConnection();
         const cmdSql = 'INSERT INTO nutriente (nome, formula) VALUES (?, ?)';
         await cx.query(cmdSql, [nome, formula]);
 
@@ -33,6 +38,7 @@ export const cadastrar = async (nome, formula) => {
 
         // Consultar a empresa recém-cadastrada pelo último ID
         const [dados, meta_dados] = await cx.query('SELECT * FROM nutriente WHERE id = ?;', [lastId]);
+        cx.release();
         return dados;
     } catch (error) {
         console.error('Erro ao cadastrar nutriente:', error);
@@ -42,8 +48,10 @@ export const cadastrar = async (nome, formula) => {
 
 export const deletar = async (id) => {
     try {
+        const cx = await pool.getConnection();
         const cmdSql = 'DELETE FROM nutriente WHERE id = ?;';
         const [dados, meta_dados] = await cx.query(cmdSql, [id]);
+        cx.release();
         return dados;
     } catch (error) {
         console.error('Erro ao deletar nutriente:', error);
