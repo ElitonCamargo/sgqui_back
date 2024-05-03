@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors'; 
 import bodyParser from 'body-parser';
 import nutriente from './routes/nutriente.js'
+import elemento from './routes/elemento.js'
 
 const app = express();
 
@@ -13,6 +14,8 @@ app.get('/',(req,res)=>{
     res.status(200).json("{'result':'ok'}");
 })
 
+
+app.use('/', elemento);
 app.use('/', nutriente);
 
 app.use((req, res, next) => {

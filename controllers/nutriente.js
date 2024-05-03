@@ -59,3 +59,14 @@ export const cadastrada = async (req, res)=>{
     }
 }
 
+export const alterar = async (req, res)=>{
+    try {
+        const { id, nome, formula } = req.body; 
+        const nutriente = await Nutriente.alterar(id, nome, formula);
+        res.status(201).json(nutriente);
+    } catch (error) {
+        console.error('Erro ao cadastrar Nutriente:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
+    }
+}
+

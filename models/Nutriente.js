@@ -46,6 +46,20 @@ export const cadastrar = async (nome, formula) => {
     }
 };
 
+export const alterar = async (id, novoNome, novaFormula) => {
+    try {
+        const cx = await pool.getConnection();
+        const cmdSql = 'UPDATE nutriente SET nome = ?, formula = ? WHERE id = ?;';
+        await cx.query(cmdSql, [novoNome, novaFormula, id]);
+        const [dados, meta_dados] = await cx.query('SELECT * FROM nutriente WHERE id = ?;', [id]);
+        cx.release();
+        return dados;
+    } catch (error) {
+        console.error('Erro ao alterar nutriente:', error);
+        throw error;
+    }
+};
+
 export const deletar = async (id) => {
     try {
         const cx = await pool.getConnection();

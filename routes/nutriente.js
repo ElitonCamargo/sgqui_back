@@ -7,5 +7,6 @@ router.get('/nutriente', nutriente.consultar);
 router.get('/nutriente/:id', nutriente.consultarPorId);
 router.delete('/nutriente/:id', nutriente.deletar);
 router.post('/nutriente', nutriente.cadastrada);
+router.put('/nutriente', nutriente.alterar);
 
 export default router;
