@@ -60,7 +60,7 @@ export const deletar = async (req, res)=>{
 export const cadastrada = async (req, res)=>{
     try {
         const elemento = req.body; 
-        const novoelemento = await elemento.cadastrar(elemento);
+        const novoelemento = await Elemento.cadastrar(elemento);
         res.status(201).json(novoelemento);
     } catch (error) {
         console.error('Erro ao cadastrar elemento:', error);
@@ -70,8 +70,10 @@ export const cadastrada = async (req, res)=>{
 
 export const alterar = async (req, res)=>{
     try { 
-        const elemento = await Elemento.alterar(req.body);
-        res.status(201).json(elemento);
+        let elemento = req.body;
+        elemento.id = req.params.id;
+        const elementoAlterado = await Elemento.alterar(elemento);
+        res.status(201).json(elementoAlterado);
     } catch (error) {
         console.error('Erro ao cadastrar elemento:', error);
         res.status(500).json({ erro: 'Erro interno do servidor' });

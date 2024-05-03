@@ -72,14 +72,20 @@ export const cadastrar = async (elemento) => {
     }
 };
 
-export const alterar = async (id, novoSimbolo, novoNome, novoNumeroAtomico, novaMassaAtomica, novoGrupo, novoPeriodo, novoPontoDeFusao, novoPontoDeEbulicao, novaDensidade, novoEstadoPadrao, novaConfiguracaoEletronica, novasPropriedades) => {
+export const alterar = async (elemento) => {
     try {
+        let valores = [];
+        let cmdSql = 'UPDATE elemento SET ';
+        for(const key in elemento){
+            valores.push(elemento[key]);
+            cmdSql += `${key} = ?, `;
+        }
+        cmdSql = cmdSql.replace(', id = ?,', '');
+        cmdSql += 'WHERE id = ?;'
         const cx = await pool.getConnection();
-        const cmdSql = 'UPDATE elemento SET simbolo = ?, nome = ?, numero_atomico = ?, massa_atomica = ?, grupo = ?, periodo = ?, ponto_de_fusao = ?, ponto_de_ebulicao = ?, densidade = ?, estado_padrao = ?, configuracao_eletronica = ?, propriedades = ? WHERE id = ?;';
-        await cx.query(cmdSql, [novoSimbolo, novoNome, novoNumeroAtomico, novaMassaAtomica, novoGrupo, novoPeriodo, novoPontoDeFusao, novoPontoDeEbulicao, novaDensidade, novoEstadoPadrao, novaConfiguracaoEletronica, novasPropriedades, id]);
-
+        await cx.query(cmdSql, valores);
         // Consultar o elemento alterado pelo ID
-        const [dados, meta_dados] = await cx.query('SELECT * FROM elemento WHERE id = ?;', [id]);
+        const [dados, meta_dados] = await cx.query('SELECT * FROM elemento WHERE id = ?;', elemento.id);
         cx.release();
         return dados;
     } catch (error) {

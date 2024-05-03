@@ -26,8 +26,9 @@ export const consultarPorId = async (id) => {
     }
 };
 
-export const cadastrar = async (nome, formula) => {
+export const cadastrar = async (nutriente) => {
     try {
+        const {nome, formula} = nutriente;
         const cx = await pool.getConnection();
         const cmdSql = 'INSERT INTO nutriente (nome, formula) VALUES (?, ?)';
         await cx.query(cmdSql, [nome, formula]);
@@ -46,11 +47,12 @@ export const cadastrar = async (nome, formula) => {
     }
 };
 
-export const alterar = async (id, novoNome, novaFormula) => {
+export const alterar = async (nutriente) => {
     try {
+        const { id, nome, formula } = nutriente;
         const cx = await pool.getConnection();
         const cmdSql = 'UPDATE nutriente SET nome = ?, formula = ? WHERE id = ?;';
-        await cx.query(cmdSql, [novoNome, novaFormula, id]);
+        await cx.query(cmdSql, [nome, formula, id]);
         const [dados, meta_dados] = await cx.query('SELECT * FROM nutriente WHERE id = ?;', [id]);
         cx.release();
         return dados;

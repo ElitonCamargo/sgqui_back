@@ -50,8 +50,8 @@ export const deletar = async (req, res)=>{
 
 export const cadastrada = async (req, res)=>{
     try {
-        const { nome, formula } = req.body; 
-        const novoNutriente = await Nutriente.cadastrar(nome, formula);
+        const nutriente = req.body; 
+        const novoNutriente = await Nutriente.cadastrar(nutriente);
         res.status(201).json(novoNutriente);
     } catch (error) {
         console.error('Erro ao cadastrar Nutriente:', error);
@@ -61,9 +61,10 @@ export const cadastrada = async (req, res)=>{
 
 export const alterar = async (req, res)=>{
     try {
-        const { id, nome, formula } = req.body; 
-        const nutriente = await Nutriente.alterar(id, nome, formula);
-        res.status(201).json(nutriente);
+        let nutriente = req.body;
+        nutriente.id = req.params.id;
+        const nutrienteAlterado = await Nutriente.alterar(nutriente);
+        res.status(201).json(nutrienteAlterado);
     } catch (error) {
         console.error('Erro ao cadastrar Nutriente:', error);
         res.status(500).json({ erro: 'Erro interno do servidor' });
