@@ -49,13 +49,20 @@ export const cadastrar = async (nutriente) => {
 
 export const alterar = async (nutriente) => {
     try {
-        const { id, nome, formula } = nutriente;
+        let valores = [];
+        let cmdSql = 'UPDATE nutriente SET ';
+        for(const key in nutriente){
+            valores.push(nutriente[key]);
+            cmdSql += `${key} = ?, `;
+        }
+        cmdSql = cmdSql.replace(', id = ?,', '');
+        cmdSql += 'WHERE id = ?;';
         const cx = await pool.getConnection();
-        const cmdSql = 'UPDATE nutriente SET nome = ?, formula = ? WHERE id = ?;';
-        await cx.query(cmdSql, [nome, formula, id]);
-        const [dados, meta_dados] = await cx.query('SELECT * FROM nutriente WHERE id = ?;', [id]);
+        await cx.query(cmdSql, valores);
+        const [dados, meta_dados] = await cx.query('SELECT * FROM nutriente WHERE id = ?;', nutriente.id);
         cx.release();
         return dados;
+
     } catch (error) {
         console.error('Erro ao alterar nutriente:', error);
         throw error;
