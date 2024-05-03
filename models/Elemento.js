@@ -12,6 +12,18 @@ export const consultar = async (filtro = '') => {
         throw error;
     }
 };
+export const consultarPorEstado = async (estado) => {
+    try {
+        const cx = await pool.getConnection();
+        const cmdSql = 'SELECT * FROM elemento WHERE estado_padrao LIKE ?;';
+        const [dados, meta_dados] = await cx.query(cmdSql, [`${estado}`]);
+        cx.release();
+        return dados;
+    } catch (error) {
+        console.error('Erro ao consultar elemento:', error);
+        throw error;
+    }
+};
 
 export const consultarPorId = async (id) => {
     try {
