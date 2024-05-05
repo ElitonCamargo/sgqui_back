@@ -13,7 +13,11 @@ export const consultar = async (req, res)=>{
         }
     } catch (error) {
         console.error('Erro na consulta:', error);
-        res.status(500).json({ erro: 'Erro interno do servidor' });
+        let erro = {
+            erro: 'Erro interno do servidor',
+            info_erro: error
+        }
+        res.status(500).json(erro);
     }
 }
 
@@ -28,7 +32,11 @@ export const consultarPorId = async (req, res)=>{
         }
     } catch (error) {
         console.error('Erro ao consultar nutriente por ID:', error);
-        res.status(500).json({ erro: 'Erro interno do servidor' });
+        let erro = {
+            erro: 'Erro interno do servidor',
+            info_erro: error
+        }
+        res.status(500).json(erro);
     }
 }
 
@@ -44,7 +52,11 @@ export const deletar = async (req, res)=>{
         }
     } catch (error) {
         console.error('Erro ao deletar nutriente por ID:', error);
-        res.status(500).json({ erro: 'Erro interno do servidor' });
+        let erro = {
+            erro: 'Erro interno do servidor',
+            info_erro: error
+        }
+        res.status(500).json(erro);
     }
 }
 
@@ -55,7 +67,11 @@ export const cadastrada = async (req, res)=>{
         res.status(201).json(novoNutriente);
     } catch (error) {
         console.error('Erro ao cadastrar Nutriente:', error);
-        res.status(500).json({ erro: 'Erro interno do servidor' });
+        let erro = {
+            erro: 'Erro interno do servidor',
+            info_erro: error
+        }
+        res.status(500).json(erro);
     }
 }
 
@@ -67,7 +83,11 @@ export const alterar = async (req, res)=>{
         res.status(201).json(nutrienteAlterado);
     } catch (error) {
         console.error('Erro ao cadastrar Nutriente:', error);
-        res.status(500).json({ erro: 'Erro interno do servidor' });
+        let erro = {
+            erro: 'Erro interno do servidor',
+            info_erro: error
+        }
+        res.status(500).json(erro);
     }
 }
 

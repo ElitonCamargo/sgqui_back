@@ -8,7 +8,6 @@ export const consultar = async (filtro = '') => {
         cx.release();
         return dados;
     } catch (error) {
-        console.error('Erro ao consultar nutriente:', error);
         throw error;
     }
 };
@@ -21,7 +20,6 @@ export const consultarPorId = async (id) => {
         cx.release();
         return dados;
     } catch (error) {
-        console.error('Erro ao consultar nutriente por ID:', error);
         throw error;
     }
 };
@@ -42,7 +40,6 @@ export const cadastrar = async (nutriente) => {
         cx.release();
         return dados;
     } catch (error) {
-        console.error('Erro ao cadastrar nutriente:', error);
         throw error;
     }
 };
@@ -64,7 +61,6 @@ export const alterar = async (nutriente) => {
         return dados;
 
     } catch (error) {
-        console.error('Erro ao alterar nutriente:', error);
         throw error;
     }
 };
@@ -77,7 +73,6 @@ export const deletar = async (id) => {
         cx.release();
         return dados;
     } catch (error) {
-        console.error('Erro ao deletar nutriente:', error);
         throw error;
     }
 };

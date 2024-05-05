@@ -8,7 +8,6 @@ export const consultar = async (filtro = '') => {
         cx.release();
         return dados;
     } catch (error) {
-        console.error('Erro ao consultar elemento:', error);
         throw error;
     }
 };
@@ -20,7 +19,6 @@ export const consultarPorEstado = async (estado) => {
         cx.release();
         return dados;
     } catch (error) {
-        console.error('Erro ao consultar elemento:', error);
         throw error;
     }
 };
@@ -33,7 +31,6 @@ export const consultarPorId = async (id) => {
         cx.release();
         return dados;
     } catch (error) {
-        console.error('Erro ao consultar elemento por ID:', error);
         throw error;
     }
 };
@@ -46,7 +43,6 @@ export const consultarPorSimbolo = async (simbolo) => {
         cx.release();
         return dados;
     } catch (error) {
-        console.error('Erro ao consultar elemento por simbolo:', error);
         throw error;
     }
 };
@@ -67,7 +63,6 @@ export const cadastrar = async (elemento) => {
         cx.release();
         return dados;
     } catch (error) {
-        console.error('Erro ao cadastrar elemento:', error);
         throw error;
     }
 };
@@ -102,7 +97,6 @@ export const deletar = async (id) => {
         cx.release();
         return dados;
     } catch (error) {
-        console.error('Erro ao deletar elemento:', error);
         throw error;
     }
 };
