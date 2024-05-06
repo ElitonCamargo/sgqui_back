@@ -6,9 +6,9 @@ const pool = mysql.createPool({
     user: db.user,
     database: db.name,
     password: db.password,
-    waitForConnections: true,
-    connectionLimit: 10, // ajuste o limite conforme necessário
-    queueLimit: 0
+    waitForConnections: true, //Se deve ou não esperar por uma conexão disponível quando o limite de conexões for atingido.
+    connectionLimit: 10, //O número máximo de conexões simultâneas permitidas no pool.
+    queueLimit: 10 //O número máximo de consultas que podem ficar na fila de espera quando todas as conexões estão ocupadas.
 });
 
 export default pool;

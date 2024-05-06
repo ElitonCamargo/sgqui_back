@@ -1,21 +1,5 @@
 import * as MateriaPrima from '../models/MateriaPrima.js';
 
-// CREATE TABLE materia_prima (
-//     id int(10) unsigned NOT NULL AUTO_INCREMENT,
-//     codigo varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-//     nome varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-//     formula varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-//     cas_number varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL, 
-//     densidade double(10,5) DEFAULT NULL,
-//     descricao varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL,
-//     createdAt datetime DEFAULT CURRENT_TIMESTAMP,
-//     updatedAt datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-//     PRIMARY KEY (id),
-//     UNIQUE KEY codigo (codigo),
-//     UNIQUE KEY nome (nome),
-//     UNIQUE KEY formula (formula)
-//   ) ENGINE=InnoDB;
-
 export const consultar = async (req, res)=>{
     try {
         let result;
