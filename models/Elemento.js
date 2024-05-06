@@ -78,11 +78,14 @@ export const alterar = async (elemento) => {
         cmdSql = cmdSql.replace(', id = ?,', '');
         cmdSql += 'WHERE id = ?;'
         const cx = await pool.getConnection();
-        await cx.query(cmdSql, valores);
-        // Consultar o elemento alterado pelo ID
-        const [dados, meta_dados] = await cx.query('SELECT * FROM elemento WHERE id = ?;', elemento.id);
+        const [execucao] = await cx.query(cmdSql, valores);
+        if(execucao.affectedRows > 0){
+            const [dados, meta_dados] = await cx.query('SELECT * FROM elemento WHERE id = ?;', elemento.id);
+            cx.release();
+            return dados;
+        }
         cx.release();
-        return dados;
+        return [];
     } catch (error) {
         console.error('Erro ao alterar elemento:', error);
         throw error;

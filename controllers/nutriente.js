@@ -2,68 +2,33 @@ import * as Nutriente from '../models/Nutriente.js';
 import * as View from '../view/index.js';
 
 export const consultar = async (req, res)=>{
-    let retorno = {
-        success: false,
-        data: null,
-        erro: null
-    }
     try {
         let nome = req.query.nome;
         nome = nome?nome:'';
-        let result;
-        result = await Nutriente.consultar(nome);
-        if (result.length > 0) {
-            retorno.success = true;
-            retorno.data = result
-            res.status(200).json(retorno);
-        } else {
-            res.status(404).json(retorno);
-        }
+        const data = await Nutriente.consultar(nome);
+        View.result(res,'GET',data);
     } catch (error) {
-        console.error('Erro na consulta:', error);         
-        retorno.erro = error;
-        res.status(500).json(retorno);
+        View.erro(res, error);
     }
 }
 
-export const consultarPorId = async (req, res)=>{
-    let retorno = {
-        success: false,
-        data: null,
-        erro: null
-    }
+export const consultarPorId = async (req, res)=>{    
     try {
         let id = req.params.id;
-        let result = await Nutriente.consultarPorId(id);
-        if (result.length > 0) {
-            retorno.success = true;
-            retorno.data = result;
-            res.status(200).json(retorno);
-        } else {
-            res.status(404).json(retorno);
-        }
+        const data = await Nutriente.consultarPorId(id);
+        View.result(res,'GET',data);
     } catch (error) {
-        console.error('Erro ao consultar nutriente por ID:', error);
-        retorno.erro = error;
-        res.status(500).json(retorno);
+        View.erro(res, error);
     }
 }
 
 export const deletar = async (req, res)=>{
     try {
         let id = req.params.id;
-        let result = await Nutriente.deletar(id);
-        if (result.affectedRows > 0) {
-            retorno.success = true;
-            retorno.data = []
-            res.status(204).json(retorno);
-        } else {
-            res.status(404).json({ erro: 'Recurso não encontrado' });
-        }
+        const data = await Nutriente.deletar(id);
+        View.result(res,'DELETE',data);
     } catch (error) {
-        console.error('Erro ao deletar nutriente por ID:', error);
-        retorno.erro = error;
-        res.status(500).json(retorno);
+        View.erro(res, error);
     }
 }
 
@@ -71,13 +36,9 @@ export const cadastrada = async (req, res)=>{
     try {
         const nutriente = req.body; 
         const novoNutriente = await Nutriente.cadastrar(nutriente);
-        retorno.success = true;
-        retorno.data = novoNutriente
-        res.status(201).json(retorno);
+        View.result(res, 'POST',novoNutriente);
     } catch (error) {
-        console.error('Erro ao cadastrar Nutriente:', error);
-        retorno.erro = error;
-        res.status(500).json(retorno);
+        View.erro(res,error);
     }
 }
 
@@ -86,13 +47,9 @@ export const alterar = async (req, res)=>{
         let nutriente = req.body;
         nutriente.id = req.params.id;
         const nutrienteAlterado = await Nutriente.alterar(nutriente);
-        retorno.success = true;
-        retorno.data = nutrienteAlterado
-        res.status(201).json(retorno);
+        View.result(res, 'PUT',nutrienteAlterado);
     } catch (error) {
-        console.error('Erro ao cadastrar Nutriente:', error);
-        retorno.erro = error;
-        res.status(500).json(retorno);
+        View.erro(res,error);
     }
 }
 

@@ -1,86 +1,58 @@
 import * as Elemento from '../models/Elemento.js';
+import * as View from '../view/index.js';
 
 export const consultar = async (req, res)=>{
     try {
         let simbolo = req.query.simbolo;        
         let filtro = req.query.filtro;
         let estado = req.query.estado;
-        let result;
+        let data;
         
-        if(simbolo)
-            result = await Elemento.consultarPorSimbolo(simbolo);
-        else if(filtro)
-            result = await Elemento.consultar(filtro);
-        else if(estado)
-            result = await Elemento.consultarPorEstado(estado);
-        else
-            result = await Elemento.consultar();
-
-        if (result.length > 0) {
-            res.status(200).json(result);
-        } else {
-            res.status(404).json({ erro: 'Nenhum recurso encontrado' });
+        if(simbolo){
+            data = await Elemento.consultarPorSimbolo(simbolo);
         }
+        else if(filtro){
+            data = await Elemento.consultar(filtro);
+        }
+        else if(estado){            
+            data = await Elemento.consultarPorEstado(estado);
+        }
+        else{            
+            data = await Elemento.consultar();
+        }
+        View.result(res,'GET',data);
     } catch (error) {
-        console.error('Erro na consulta:', error);
-        let erro = {
-            erro: 'Erro interno do servidor',
-            info_erro: error
-        }
-        res.status(500).json(erro);
+        View.erro(res, error);
     }
 }
 
 export const consultarPorId = async (req, res)=>{
     try {
         let id = req.params.id;
-        let result = await Elemento.consultarPorId(id);
-        if (result.length > 0) {
-            res.status(200).json(result);
-        } else {
-            res.status(404).json({ erro: 'Recurso não encontrado' });
-        }
+        let data = await Elemento.consultarPorId(id);
+        View.result(res,'GET',data);
     } catch (error) {
-        console.error('Erro ao consultar elemento por ID:', error);
-        let erro = {
-            erro: 'Erro interno do servidor',
-            info_erro: error
-        }
-        res.status(500).json(erro);
+        View.erro(res, error);
     }
 }
 
 export const deletar = async (req, res)=>{
     try {
-        let id = req.params.id;
-        let result = await Elemento.deletar(id);
-        if (result.affectedRows > 0) {
-            res.status(204).json([]);
-        } else {
-            res.status(404).json({ erro: 'Recurso não encontrado' });
-        }
+        const id = req.params.id;
+        const data = await Elemento.deletar(id);
+        View.result(res,'DELETE',data);
     } catch (error) {
-        console.error('Erro ao deletar elemento por ID:', error);
-        let erro = {
-            erro: 'Erro interno do servidor',
-            info_erro: error
-        }
-        res.status(500).json(erro);
+        View.erro(res, error);
     }
 }
 
 export const cadastrada = async (req, res)=>{
     try {
         const elemento = req.body; 
-        const novoelemento = await Elemento.cadastrar(elemento);
-        res.status(201).json(novoelemento);
+        const novoElemento = await Elemento.cadastrar(elemento);
+        View.result(res, 'POST',novoElemento);
     } catch (error) {
-        console.error('Erro ao cadastrar elemento:', error);
-        let erro = {
-            erro: 'Erro interno do servidor',
-            info_erro: error
-        }
-        res.status(500).json(erro);
+        View.erro(res,error);
     }
 }
 
@@ -89,14 +61,9 @@ export const alterar = async (req, res)=>{
         let elemento = req.body;
         elemento.id = req.params.id;
         const elementoAlterado = await Elemento.alterar(elemento);
-        res.status(201).json(elementoAlterado);
+        View.result(res, 'PUT',elementoAlterado);
     } catch (error) {
-        console.error('Erro ao cadastrar elemento:', error);
-        let erro = {
-            erro: 'Erro interno do servidor',
-            info_erro: error
-        }
-        res.status(500).json(erro);
+        View.erro(res,error);
     }
 }
 

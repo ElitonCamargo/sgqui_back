@@ -55,10 +55,14 @@ export const alterar = async (nutriente) => {
         cmdSql = cmdSql.replace(', id = ?,', '');
         cmdSql += 'WHERE id = ?;';
         const cx = await pool.getConnection();
-        await cx.query(cmdSql, valores);
-        const [dados, meta_dados] = await cx.query('SELECT * FROM nutriente WHERE id = ?;', nutriente.id);
+        const [execucao] = await cx.query(cmdSql, valores);
+        if(execucao.affectedRows > 0){
+            const [dados, meta_dados] = await cx.query('SELECT * FROM nutriente WHERE id = ?;', nutriente.id);
+            cx.release();
+            return dados;
+        }
         cx.release();
-        return dados;
+        return [];
 
     } catch (error) {
         throw error;

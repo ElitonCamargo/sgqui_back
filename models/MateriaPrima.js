@@ -101,11 +101,15 @@ export const alterar = async (materia_prima) => {
         }
         cmdSql = cmdSql.replace(', id = ?,', '');
         cmdSql += 'WHERE id = ?;';
-        const cx = await pool.getConnection();
-        await cx.query(cmdSql, valores);
-        const [dados, meta_dados] = await cx.query('SELECT * FROM materia_prima WHERE id = ?;', materia_prima.id);
+        const cx = await pool.getConnection();     
+        const [execucao] = await cx.query(cmdSql, valores);
+        if(execucao.affectedRows > 0){
+            const [dados, meta_dados] = await cx.query('SELECT * FROM materia_prima WHERE id = ?;', materia_prima.id);
+            cx.release();
+            return dados;
+        }
         cx.release();
-        return dados;
+        return [];
 
     } catch (error) {
         throw error;
