@@ -91,8 +91,9 @@ export const deletar = async (id) => {
     try {
         const cmdSql = 'DELETE FROM garantia WHERE id = ?;';
         const cx = await pool.getConnection();
-        await cx.query(cmdSql, [id]);
+        const [dados, meta_dados] = await cx.query(cmdSql, [id]);
         cx.release();
+        return dados;
     } catch (error) {
         throw error;
     }
