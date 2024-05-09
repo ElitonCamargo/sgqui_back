@@ -74,7 +74,7 @@ export const atualizar = async (garantia) => {
         const { percentual, id } = garantia;
         const cmdSql = 'UPDATE garantia SET percentual = ? WHERE id = ?;';
         const cx = await pool.getConnection();
-        const execucao = await cx.query(cmdSql, [percentual, id]);
+        const [execucao] = await cx.query(cmdSql, [percentual, id]);
         if(execucao.affectedRows > 0){
             const [dados, meta_dados] = await cx.query('SELECT * FROM garantia WHERE id = ?;', id);
             cx.release();
