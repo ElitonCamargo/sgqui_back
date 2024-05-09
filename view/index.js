@@ -41,7 +41,7 @@ const result = (res, method, data)=>{
             res.status(201).json(retorno);
         } else {
             retorno.erro = "Recurso não encontrado";
-            res.status(404).json();
+            res.status(404).json(retorno);
         }
     }
     else{
