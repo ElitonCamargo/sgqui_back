@@ -7,6 +7,7 @@ import elemento from './routes/elemento.js';
 import materia_prima from './routes/materia_prima.js';
 import garantia from './routes/garantia.js';
 import autenticacao from './routes/autenticacao.js';
+import usuario from './routes/usuario.js';
 
 const app = express();
 
@@ -38,6 +39,8 @@ app.use((req, res, next) => {
 });
 
 // Rotas protegidas pela autenticação
+
+app.use('/', usuario);
 app.use('/', elemento);
 app.use('/', nutriente);
 app.use('/', materia_prima);
