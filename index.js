@@ -47,7 +47,13 @@ app.use('/', materia_prima);
 app.use('/', garantia);
 
 app.use((req, res, next) => {
-    res.status(404).json({ error: 'Rota não encontrada' });
+    let retorno = {
+        success: false,
+        quant: 0,
+        data: [],
+        erro: 'Rota inválida'
+    }
+    res.status(500).json(retorno);
 });
 
 const PORT = 8080; 
