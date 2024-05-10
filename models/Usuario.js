@@ -38,16 +38,16 @@ export const consultarPorEmail = async (email) => {
 };
 
 export const login = async (email, senha)=>{
-    try {
-        const cx = await pool.getConnection();
-        const cmdSql = 'SELECT * FROM usuario WHERE email = ?;';
-        const [dados, meta_dados] = await cx.query(cmdSql, [email]);
-        cx.release();
-        console.log(dados[0]);
-        return dados;
-    } catch (error) {
-        throw error;
-    }
+    // try {
+    //     const cx = await pool.getConnection();
+    //     const cmdSql = 'SELECT * FROM usuario WHERE email = ?;';
+    //     const [dados, meta_dados] = await cx.query(cmdSql, [email]);
+    //     cx.release();
+    //     console.log(dados[0]);
+    //     return dados;
+    // } catch (error) {
+    //     throw error;
+    // }
     // const usuario = await Usuario.findOne({ email });
 
     // if (!usuario) {
