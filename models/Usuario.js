@@ -93,7 +93,7 @@ export const alterar = async (usuario) => {
         let cmdSql = 'UPDATE usuario SET ';
         for(const key in usuario){
             if(key === 'senha'){
-                const hashSenha = await bcrypt.hash(senha, 10);
+                const hashSenha = await bcrypt.hash(usuario[key], 10);
                 valores.push(hashSenha);
             }
             else{

@@ -20,14 +20,43 @@ export const login =  async (req, res) => {
     }
 }
 
-export const consultar = async (req, res)=>{
+export const consultarPorId = async (req, res)=>{
     try {
-        let nome = req.query.nome;
-        nome = nome?nome:'';
-        const data = await Usuario.consultar(nome);
+        const id = req.params.id;
+        const data = await Usuario.consultarPorId(id);
         View.result(res,'GET',data);
     } catch (error) {
         View.erro(res, error);
+    }
+}
+
+export const consultar = async (req, res)=>{
+    try {
+        const email = req.query.email;
+        const nome = req.query.nome;
+        let data = [];
+        if(email){
+            data = await Usuario.consultarPorEmail(email);
+        }
+        else if(nome){
+            data = await Usuario.consultar(nome);
+        }
+        else{
+            data = await Usuario.consultar();
+        }
+        View.result(res,'GET',data);
+    } catch (error) {
+        View.erro(res, error);
+    }
+}
+
+export const cadastrar = async (req, res)=>{
+    try {
+        const usuario = req.body; 
+        const novoUsuario = await Usuario.cadastrar(usuario);
+        View.result(res, 'POST',novoUsuario);
+    } catch (error) {
+        View.erro(res,error);
     }
 }
 
