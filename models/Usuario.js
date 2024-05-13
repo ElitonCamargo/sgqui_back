@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 export const consultar = async (filtro = '') => {
     try {
         const cx = await pool.getConnection();
-        const cmdSql = 'SELECT * FROM usuario WHERE nome LIKE ?;';
+        const cmdSql = 'SELECT id,nome,email,permissao,avatar,status,createdAt,updatedAt FROM usuario WHERE nome LIKE ?;';
         const [dados, meta_dados] = await cx.query(cmdSql, [`%${filtro}%`]);
         cx.release();
         return dados;
@@ -16,7 +16,7 @@ export const consultar = async (filtro = '') => {
 export const consultarPorId = async (id) => {
     try {
         const cx = await pool.getConnection();
-        const cmdSql = 'SELECT * FROM usuario WHERE id = ?;';
+        const cmdSql = 'SELECT id,nome,email,permissao,avatar,status,createdAt,updatedAt FROM usuario WHERE id = ?;';
         const [dados, meta_dados] = await cx.query(cmdSql, [id]);
         cx.release();
         return dados;
@@ -28,7 +28,7 @@ export const consultarPorId = async (id) => {
 export const consultarPorEmail = async (email) => {
     try {
         const cx = await pool.getConnection();
-        const cmdSql = 'SELECT * FROM usuario WHERE email = ?;';
+        const cmdSql = 'SELECT id,nome,email,permissao,avatar,status,createdAt,updatedAt FROM usuario WHERE email = ?;';
         const [dados, meta_dados] = await cx.query(cmdSql, [email]);
         cx.release();
         return dados;
@@ -38,34 +38,23 @@ export const consultarPorEmail = async (email) => {
 };
 
 export const login = async (email, senha)=>{
-    // try {
-    //     const cx = await pool.getConnection();
-    //     const cmdSql = 'SELECT * FROM usuario WHERE email = ?;';
-    //     const [dados, meta_dados] = await cx.query(cmdSql, [email]);
-    //     cx.release();
-    //     console.log(dados[0]);
-    //     return dados;
-    // } catch (error) {
-    //     throw error;
-    // }
-    // const usuario = await Usuario.findOne({ email });
-
-    // if (!usuario) {
-    //     return res.status(401).json({ mensagem: 'Credenciais inválidas' });
-    // }
-
-    // const senhaValida = await bcrypt.compare(senha, usuario.senha);
-
-    // if (!senhaValida) {
-    //     return res.status(401).json({ mensagem: 'Credenciais inválidas' });
-    // }
-    if(email === 'admin@com' && senha === 'admin123'){
-        return {
-            email: email,
-            senha: senha
-        };       
+    try {
+        const cx = await pool.getConnection();
+        const cmdSql = 'SELECT * FROM usuario WHERE email = ?;';
+        const [result, meta_dados] = await cx.query(cmdSql, [email]);
+        cx.release();               
+        if(result[0]){
+            let usuario = result[0];
+            const senhaValida = await bcrypt.compare(senha, usuario.senha);
+            if(senhaValida){
+                usuario.senha = "";
+                return usuario
+            }
+        }
+        return false;
+    } catch (error) {
+        throw error;     
     }
-    return false;
 }
 
 export const cadastrar = async (usuario) => {
@@ -79,7 +68,7 @@ export const cadastrar = async (usuario) => {
         const [result] = await cx.query('SELECT LAST_INSERT_ID() as lastId');
         const lastId = result[0].lastId;
  
-        const [dados, meta_dados] = await cx.query('SELECT * FROM usuario WHERE id = ?;', [lastId]);
+        const [dados, meta_dados] = await cx.query('SELECT id,nome,email,permissao,avatar,status,createdAt,updatedAt FROM usuario WHERE id = ?;', [lastId]);
         cx.release();
         return dados;
     } catch (error) {

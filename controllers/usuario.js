@@ -7,22 +7,40 @@ export const login =  async (req, res) => {
     const key_api = '%gtHy(86$kÇ.kb6i';
     const { email, senha } = req.body;
     try {  
-        const result = await Usuario.login(email,senha);
-        if(result){
-            const token = jwt.sign({ usuario: result.email }, key_api, { expiresIn: '24h' });
-            return res.json({ token });
+
+        const usuario = await Usuario.login(email,senha);
+        if(usuario){
+            const expiracao = new Date();// Calcular a data de expiração
+            expiracao.setDate(expiracao.getDate() + 1); // Adiciona 1 dia
+            const token = jwt.sign({ usuario: usuario.id, exp: Math.floor(expiracao.getTime() / 1000) }, key_api);        
+            let data = [
+                {token: `Bearer ${token}`},
+                {expiracao: expiracao},
+                {usuario: usuario}
+            ];
+            return View.result(res,'GET',data);
         }
-        return res.status(401).json({ mensagem: 'Credenciais inválidas' });
-        
+        else{
+            return View.result(res,'GET',[],'Credenciais inválidas');       
+        }
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ mensagem: 'Erro interno do servidor' });
+        View.erro(res,{ mensagem: 'Erro interno do servidor', error: error });
     }
 }
 
 export const consultarPorId = async (req, res)=>{
     try {
         const id = req.params.id;
+        const data = await Usuario.consultarPorId(id);
+        View.result(res,'GET',data);
+    } catch (error) {
+        View.erro(res, error);
+    }
+}
+
+export const consultarLogado = async (req, res)=>{
+    try {
+        const id = req.loginId;
         const data = await Usuario.consultarPorId(id);
         View.result(res,'GET',data);
     } catch (error) {

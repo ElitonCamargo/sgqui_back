@@ -1,4 +1,4 @@
-const result = (res, method, data)=>{
+const result = (res, method, data,info_erro=false)=>{
     let retorno = {
         success: false,
         quant: 0,
@@ -10,27 +10,30 @@ const result = (res, method, data)=>{
             retorno.quant = data.length;
             retorno.success = true;
             retorno.data = data
-            res.status(200).json(retorno);
+            return res.status(200).json(retorno);
         } else {
-            res.status(404).json(retorno);
+            if(info_erro){
+                retorno.erro = info_erro
+            }
+            return res.status(404).json(retorno);
         }
     }
     else if(method==='POST'){       
         retorno.quant = data.length;
         retorno.success = true;
         retorno.data = data
-        res.status(201).json(retorno);        
+        return res.status(201).json(retorno);        
     }
     else if(method==='PUT'){
         if(data.length > 0){
             retorno.quant = data.length;
             retorno.success = true;
             retorno.data = data
-            res.status(201).json(retorno);
+            return res.status(201).json(retorno);
         }
         else{
             retorno.erro = "Recurso não encontrado";
-            res.status(404).json(retorno);
+            return res.status(404).json(retorno);
         }
     }
     else if(method==='DELETE'){
@@ -38,10 +41,10 @@ const result = (res, method, data)=>{
             retorno.quant = data.affectedRows;
             retorno.success = true;
             retorno.data = []
-            res.status(201).json(retorno);
+            return res.status(201).json(retorno);
         } else {
             retorno.erro = "Recurso não encontrado";
-            res.status(404).json(retorno);
+            return res.status(404).json(retorno);
         }
     }
     else{
@@ -56,7 +59,7 @@ const erro = (res, erro)=>{
         data: [],
         erro: erro
     }
-    res.status(500).json(retorno);
+    return res.status(500).json(retorno);
 }
 
 export {result, erro};

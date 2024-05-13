@@ -2,11 +2,12 @@ import express from 'express';
 import cors from 'cors'; 
 import jwt from 'jsonwebtoken';
 import bodyParser from 'body-parser';
+import autenticacao from './routes/autenticacao.js';
+import * as middleware from './routes/middleware.js';
 import nutriente from './routes/nutriente.js';
 import elemento from './routes/elemento.js';
 import materia_prima from './routes/materia_prima.js';
 import garantia from './routes/garantia.js';
-import autenticacao from './routes/autenticacao.js';
 import usuario from './routes/usuario.js';
 
 const app = express();
@@ -15,31 +16,29 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
+// Rotas de públicas
 app.get('/',(req,res)=>{
-    res.status(200).json({ result: 'ok' });
-});
-
-// Rotas de autenticação
-app.use('/', autenticacao);
-
-// Middleware de autenticação JWT
-app.use((req, res, next) => {
-    const key_api = '%gtHy(86$kÇ.kb6i';
-    const token = req.headers['autorizacao'];
-    if (!token) {
-        return res.status(401).json({ mensagem: 'Token de autenticação não fornecido' });
-    }
-    jwt.verify(token, key_api, (err, decoded) => {
-        if (err) {
-            return res.status(401).json({ mensagem: 'Token de autenticação inválido' });
-        }
-        req.usuario = decoded.usuario; // Armazena os dados do usuário decodificados na solicitação
-        next();
+    const rootDomain = req.protocol + '://' + req.get('host');
+    res.status(200).json({     
+        status_server: 'ok',
+        dominio_raiz : rootDomain,
+        rotas:[
+            `${rootDomain}/login`,
+            `${rootDomain}/usuario`,
+            `${rootDomain}/elemento`,
+            `${rootDomain}/materia_prima`,
+            `${rootDomain}/nutriente`,
+            `${rootDomain}/carantia`,
+        ]
     });
 });
 
-// Rotas protegidas pela autenticação
+app.use('/', autenticacao); // Rotas de autenticação
 
+// Middleware de autenticação JWT
+app.use(middleware.middlewareAutenticação);
+
+// Rotas protegidas pela autenticação
 app.use('/', usuario);
 app.use('/', elemento);
 app.use('/', nutriente);
