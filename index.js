@@ -9,6 +9,7 @@ import elemento from './routes/elemento.js';
 import materia_prima from './routes/materia_prima.js';
 import garantia from './routes/garantia.js';
 import usuario from './routes/usuario.js';
+import projeto from './routes/projeto.js';
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use('/', elemento);
 app.use('/', nutriente);
 app.use('/', materia_prima);
 app.use('/', garantia);
+app.use('/', projeto);
 
 app.use((req, res, next) => {
     let retorno = {
