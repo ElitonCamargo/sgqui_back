@@ -73,7 +73,7 @@ export const consultarPorId = async (id) => {
     }
 };
 
-export const consultarPorData = async (data_inicio, data_termino) => {
+export const consultarPorData = async (data_inicio="", data_termino="") => {
     try {
         const cx = await pool.getConnection();
         const cmdSql = `SELECT id, nome, descricao, data_inicio, data_termino, status, getStatusAtual(id) as status_atual, createdAt, updatedAt FROM projeto
@@ -89,16 +89,11 @@ export const consultarPorData = async (data_inicio, data_termino) => {
     }
 };
 
-export const consultarPorStatus = async (data_inicio, data_termino) => {
-    //status
+export const consultarPorStatus = async (status=0) => {
     try {
         const cx = await pool.getConnection();
-        const cmdSql = `SELECT id, nome, descricao, data_inicio, data_termino, status, getStatusAtual(id) as status_atual, createdAt, updatedAt  FROM projeto
-        WHERE (data_inicio BETWEEN '${data_inicio}' AND '${data_termino}')
-           OR (data_termino BETWEEN '${data_inicio}' AND '${data_termino}')
-           OR (data_inicio <= '${data_inicio}' AND data_termino >= '${data_termino}');
-        `;
-        const [dados, meta_dados] = await cx.query(cmdSql);
+        const cmdSql = `SELECT id, nome, descricao, data_inicio, data_termino, status, status_atual, createdAt, updatedAt FROM (SELECT projeto.*, getStatusAtual(id) as status_atual FROM projeto) as p WHERE status_atual->'$.id_status' LIKE ?;`; 
+        const [dados, meta_dados] = await cx.query(cmdSql,[status]);
         cx.release();
         return dados;
     } catch (error) {

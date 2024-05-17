@@ -4,8 +4,17 @@ import * as View from '../view/index.js';
 export const consultar = async (req, res)=>{
     try {
         let nome = req.query.nome;
-        nome = nome?nome:'';
-        const data = await Projeto.consultar(nome);
+        let status = req.query.status;
+        let data = [];
+        if(nome){
+            data = await Projeto.consultar(nome);
+        }
+        else if(status){
+            data = await Projeto.consultarPorStatus(status);
+        }
+        else{
+            data = await Projeto.consultar();
+        }
         return View.result(res,'GET',data);
     } catch (error) {
         return View.erro(res, error);
@@ -22,15 +31,26 @@ export const consultarPorId = async (req, res)=>{
     }
 }
 
-// export const deletar = async (req, res)=>{
-//     try {
-//         let id = req.params.id;
-//         const data = await Nutriente.deletar(id);
-//         View.result(res,'DELETE',data);
-//     } catch (error) {
-//         View.erro(res, error);
-//     }
-// }
+export const consultarPorData = async (req, res)=>{    
+    try {
+        let inicio = req.params.inicio;
+        let termino = req.params.termino;
+        const data = await Projeto.consultarPorData(inicio,termino);
+        return View.result(res,'GET',data);
+    } catch (error) {
+        return View.erro(res, error);
+    }
+}
+
+export const deletar = async (req, res)=>{
+    try {
+        let id = req.params.id;
+        const data = await Projeto.deletar(id);
+        return View.result(res,'DELETE',data);
+    } catch (error) {
+        return View.erro(res, error);
+    }
+}
 
 export const cadastrar = async (req, res)=>{
     try {
