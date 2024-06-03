@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-export const middlewareAutenticação = (req, res, next) => {
+export const middlewareAutenticacao = (req, res, next) => {
     try {
         const key_api = '%gtHy(86$kÇ.kb6i';
         const authorizationHeader = req.headers['authorization'];

@@ -1,9 +1,8 @@
 import express from 'express';
-import cors from 'cors'; 
-import jwt from 'jsonwebtoken';
+import cors from 'cors';
 import bodyParser from 'body-parser';
 import autenticacao from './routes/autenticacao.js';
-import * as middleware from './routes/middleware.js';
+import * as middleware from './controllers/middleware.js';
 import nutriente from './routes/nutriente.js';
 import elemento from './routes/elemento.js';
 import materia_prima from './routes/materia_prima.js';
@@ -29,17 +28,18 @@ app.get('/',(req,res)=>{
             `${rootDomain}/elemento`,
             `${rootDomain}/materia_prima`,
             `${rootDomain}/nutriente`,
-            `${rootDomain}/carantia`,
+            `${rootDomain}/garantia`,
         ]
     });
 });
 
-app.use('/', autenticacao); // Rotas de autenticação
+// Rotas de autenticação
+app.use('/', autenticacao);
 
 // Middleware de autenticação JWT
-app.use(middleware.middlewareAutenticação);
+app.use(middleware.middlewareAutenticacao);
 
-// Rotas protegidas pela autenticação
+// Rotas protegidas pelo middlewareAutenticacao
 app.use('/', usuario);
 app.use('/', elemento);
 app.use('/', nutriente);

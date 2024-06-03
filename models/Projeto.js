@@ -1,23 +1,30 @@
 import pool from '../database/data.js';
 
-export const cadastrar = async (projeto={}) => {
+export const cadastrar = async (projeto={},loginId=0) => {
     try {
-        const {nome, descricao, data_inicio, data_termino, status, loginId} = projeto;
-       
-        const cmdSql = `INSERT INTO projeto (nome, descricao, data_inicio, data_termino, status) VALUES (?, ?, ?, ?, JSON_ARRAY(JSON_OBJECT('id_status', ?, 'data_alteracao', (SELECT CURRENT_TIMESTAMP), 'id_responsavel', ?)));`;
+
+        
+        const {nome,descricao,data_inicio,data_termino,densidade,ph,tipo,aplicacao,natureza_fisica,status, loginId} = projeto;
+
+        
+
+        
+        const cmdSql = `INSERT INTO projeto (nome,descricao,data_inicio,data_termino,densidade,ph,tipo,aplicacao,natureza_fisica,status) VALUES (?,?,?,?,?,?,?,?,?,JSON_ARRAY(JSON_OBJECT('status', ?, 'data_alteracao', (SELECT CURRENT_TIMESTAMP), 'id_responsavel', ?)));`;
         const cx = await pool.getConnection();
-        await cx.query(cmdSql, [nome, descricao, data_inicio, data_termino, status, loginId]);
+        await cx.query(cmdSql, [nome,descricao,data_inicio,data_termino,densidade,ph,tipo,aplicacao,natureza_fisica,status, loginId]);
 
         const [result] = await cx.query('SELECT LAST_INSERT_ID() as lastId');
         const lastId = result[0].lastId;
 
-        const [dados, meta_dados] = await cx.query('SELECT id, nome, descricao, data_inicio, data_termino, status, getStatusAtual(id) as status_atual, createdAt, updatedAt FROM projeto WHERE id = ?;', [lastId]);
+        const [dados, meta_dados] = await cx.query('SELECT id, nome, descricao, data_inicio, data_termino, densidade, ph, tipo, aplicacao, natureza_fisica, status, getStatusAtual(id) as status_atual, createdAt, updatedAt FROM projeto WHERE id = ?;', [lastId]);
         cx.release();
         return dados;
     } catch (error) {
         throw error;
     }
 };
+
+
 
 export const alterar = async (projeto={},loginId=0) => {
     try {
