@@ -55,8 +55,7 @@ export const deletar = async (req, res)=>{
 export const cadastrar = async (req, res)=>{
     try {
         let projeto = req.body;
-        projeto.loginId = req.loginId;
-        const novoProjeto = await Projeto.cadastrar(projeto);
+        const novoProjeto = await Projeto.cadastrar(projeto,req.loginId);
         return View.result(res, 'POST',novoProjeto);
     } catch (error) {
         return View.erro(res,error);
