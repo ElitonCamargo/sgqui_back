@@ -1,11 +1,11 @@
 // ****************** Configuração do banco de dados ************************** //
 const developmentConfig = {
-    host: "108.167.151.37",
+    host: "100.26.59.163",
     port: 3306,
-    name: "drawbe66_sgqui",
+    name: "api_sg_qui",
     dialect: "mysql",
-    user: "drawbe66_sgqui",
-    password: "Sg_Qui123"
+    user: "admin_api",
+    password: "%gt&j7&gfE0u1895"
 };
 
 const productionConfig = {
