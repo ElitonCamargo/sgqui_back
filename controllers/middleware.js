@@ -10,12 +10,9 @@ export const middlewareAutenticacao = (req, res, next) => {
                 success: false,
                 quant: 0,
                 data: [],
-                erro: {
-                    code: 1,
-                    message: 'Token de autenticação não fornecido'
-                }
+                erro: 'Token de autenticação não fornecido'
             };
-            return res.status(401).json(retorno);
+            return res.status(498).json(retorno);
         }
 
         const [bearer, token] = authorizationHeader.split(' ');
@@ -25,12 +22,9 @@ export const middlewareAutenticacao = (req, res, next) => {
                 success: false,
                 quant: 0,
                 data: [],
-                erro: {
-                    code: 2,
-                    message: 'Formato de token inválido'
-                }
+                erro: 'Formato de token inválido'
             };
-            return res.status(401).json(retorno);
+            return res.status(498).json(retorno);
         }
 
         jwt.verify(token, key_api, (err, decoded) => {
@@ -39,12 +33,9 @@ export const middlewareAutenticacao = (req, res, next) => {
                     success: false,
                     quant: 0,
                     data: [],
-                    erro: {
-                        code: 3,
-                        message: 'Token de autenticação inválido'
-                    } 
+                    erro: 'Token de autenticação inválido'
                 }
-                return res.status(401).json(retorno);
+                return res.status(498).json(retorno);
             }
             req.loginId = decoded.usuario; // Armazena os dados do usuário decodificados na solicitação            
             next();
@@ -56,10 +47,7 @@ export const middlewareAutenticacao = (req, res, next) => {
             success: false,
             quant: 0,
             data: [],
-            erro: {
-                code: 4,
-                message: 'Erro interno do servidor: '+ error
-            }
+            erro: 'Erro interno do servidor: '+ error
         }
         return res.status(500).json(retorno);
     }
