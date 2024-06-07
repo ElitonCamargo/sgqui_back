@@ -23,12 +23,13 @@ app.get('/',(req,res)=>{
         status_server: 'ok',
         dominio_raiz : rootDomain,
         rotas:[
-            `${rootDomain}/login`,
+            `${rootDomain}/usuario/login`,
             `${rootDomain}/usuario`,
             `${rootDomain}/elemento`,
             `${rootDomain}/materia_prima`,
             `${rootDomain}/nutriente`,
             `${rootDomain}/garantia`,
+            `${rootDomain}/projeto`,
         ]
     });
 });
