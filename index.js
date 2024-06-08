@@ -31,6 +31,7 @@ app.get('/',(req,res)=>{
             `${rootDomain}/nutriente`,
             `${rootDomain}/garantia`,
             `${rootDomain}/projeto`,
+            `${rootDomain}/etepa`,
         ]
     });
 });
