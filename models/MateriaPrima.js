@@ -61,6 +61,18 @@ export const consultarPorFormula = async (formula) => {
     }
 };
 
+export const consultarMP_precentual_nutriente = async (nutriente=0,percentual=0.0) => {
+    try {
+        const cx = await pool.getConnection();
+        const cmdSql = 'CALL mp_precentual_nutriente(?,?);';
+        const [dados, meta_dados] = await cx.query(cmdSql, [nutriente,percentual]);
+        cx.release();
+        return dados[0];
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const cadastrar = async (materia_prima) => {
     try {        
         let params_cmdSql = '';

@@ -39,6 +39,17 @@ export const consultarPorId = async (req, res)=>{
     }
 }
 
+export const consultarMP_precentual_nutriente = async (req, res)=>{
+    try {
+        const nutriente = req.params.nutriente
+        const percentual = req.params.percentual;
+        const data = await MateriaPrima.consultarMP_precentual_nutriente(nutriente,percentual);
+        View.result(res,'GET',data);
+    } catch (error) {
+        View.erro(res, error);
+    }
+}
+
 export const deletar = async (req, res)=>{
     try {
         const id = req.params.id;
