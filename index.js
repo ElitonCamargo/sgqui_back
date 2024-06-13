@@ -10,6 +10,7 @@ import garantia from './routes/garantia.js';
 import usuario from './routes/usuario.js';
 import projeto from './routes/projeto.js';
 import etapa from './routes/etapa.js';
+import etapa_mp from './routes/etapa_mp.js';
 
 const app = express();
 
@@ -32,7 +33,7 @@ app.get('/',(req,res)=>{
             `${rootDomain}/garantia`,
             `${rootDomain}/projeto`,
             `${rootDomain}/etepa`,
-            `${rootDomain}/etepa`,
+            `${rootDomain}/etepa_mp`,
         ]
     });
 });
@@ -51,6 +52,7 @@ app.use('/', materia_prima);
 app.use('/', garantia);
 app.use('/', projeto);
 app.use('/',etapa);
+app.use('/',etapa_mp);
 
 app.use((req, res, next) => {
     let retorno = {

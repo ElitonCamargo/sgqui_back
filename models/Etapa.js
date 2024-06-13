@@ -93,40 +93,25 @@ export const alterar = async (etapa={}) => {
 
 // Define e exporta uma função assíncrona chamada 'alterarOrdem', que reorganiza a ordem das etapas dentro de um projeto.
 export const alterarOrdem = async (ordemEtapa = []) => {
-    // Exemplo de ordemEtapa: [{"id": 2, "ordem": 3}, {"id": 1, "ordem": 2}, {"id": 3, "ordem": 1}]
     try {
+        // Converte a lista de etapas para JSON
+        const ordemEtapaJson = JSON.stringify(ordemEtapa);
+
         // Obtém uma conexão do pool de conexões.
         const cx = await pool.getConnection();
 
         try {
-            // Inicia a transação.
-            await cx.beginTransaction();
-
-            // Variável para contar o número de linhas afetadas.
-            let totalAffectedRows = 0;
-
-            // Itera sobre cada etapa para construir e executar a consulta SQL de atualização.
-            for (const etapa of ordemEtapa) {
-                const cmdSql = `UPDATE etapa SET ordem = ? WHERE id = ?`;
-                const [result] = await cx.query(cmdSql, [etapa.ordem, etapa.id]);
-                totalAffectedRows += result.affectedRows;
-            }
-
-            // Confirma a transação.
-            await cx.commit();
+            // Executa a stored procedure com o JSON de etapas como argumento.
+            const cmdSql = `CALL etapa_alterarOrdem(?)`;
+            await cx.query(cmdSql, [ordemEtapaJson]);
 
             // Libera a conexão de volta para o pool.
             cx.release();
-            console.log(totalAffectedRows);
 
-            if(totalAffectedRows > 0){
-                return  ordemEtapa;
-            }
-            return [];
+            // Se a execução foi bem-sucedida, retorna a lista de etapas.
+            return ordemEtapa;
         } catch (err) {
-            // Em caso de erro, desfaz todas as alterações da transação.
-            await cx.rollback();
-            // Libera a conexão de volta para o pool.
+            // Libera a conexão de volta para o pool em caso de erro.
             cx.release();
             // Lança o erro para ser tratado pelo bloco externo.
             throw err;

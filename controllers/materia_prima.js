@@ -4,10 +4,15 @@ import * as View from '../view/index.js';
 export const consultar = async (req, res)=>{
     try {
         let data;
-        const nome = req.query.nome;
-        const formula = req.query.formula;
-        const codigo = req.query.codigo;
-        const cas_number = req.query.cas_number;
+        const {
+            nome,
+            formula,
+            codigo,
+            cas_number,
+            nutriente,
+            percentual
+        } = req.query;
+        
         if(nome){
             data = await MateriaPrima.consultar(nome);
         }
@@ -19,6 +24,9 @@ export const consultar = async (req, res)=>{
         }
         else if(cas_number){
             data = await MateriaPrima.consultarPorCas_number(cas_number);
+        }
+        else if(nutriente && percentual){
+            data = await MateriaPrima.consultarMP_precentual_nutriente(nutriente,percentual);
         }
         else{
             data = await MateriaPrima.consultar();
