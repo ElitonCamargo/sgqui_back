@@ -7,9 +7,17 @@ const developmentConfig = {
     user: "admin_api",
     password: "%gt&j7&gfE0u1895"
 };
+// const developmentConfig = {
+//     host: "127.0.0.1",
+//     port: 3306,
+//     name: "api_sg_qui",
+//     dialect: "mysql",
+//     user: "root",
+//     password: ""
+// };
 
 const productionConfig = {
-    host: process.env.DB_HOST || '108.167.151.37',
+    host: process.env.DB_HOST || '100.26.59.163',
     port: parseInt(process.env.DB_PORT || '3306', 10),
     name: process.env.BD_NAME || 'drawbe66_sgqui',
     dialect: process.env.BD_DIALECT || 'mysql',

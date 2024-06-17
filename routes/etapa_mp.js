@@ -7,7 +7,7 @@ router.post('/etapa_mp', etapa_mp.cadastrar);
 router.get('/etapa_mp/:id', etapa_mp.consultarPorId);
 router.get('/etapa_mp/etapa/:id', etapa_mp.consultarPorEtapa);
 router.put('/etapa_mp/:id', etapa_mp.alterar);
-router.put('/etapa_mp/projeto/ordenar/', etapa_mp.alterarOrdem);
+router.put('/etapa_mp/ordenar/m_p/', etapa_mp.alterarOrdem);
 router.delete('/etapa_mp/:id', etapa_mp.deletar);
 
 export default router;

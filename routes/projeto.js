@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.get('/projeto', projeto.consultar);
 router.get('/projeto/:id', projeto.consultarPorId);
+router.get('/projeto/detalhado/:id', projeto.consultaDetalhada);
 router.get('/projeto/data/:inicio/:termino', projeto.consultarPorData);
 router.post('/projeto', projeto.cadastrar);
 router.put('/projeto/:id', projeto.alterar);

@@ -129,4 +129,114 @@ export const deletar = async (id) => {
     }
 };
 
+// *************** Consultas Entre vária entidades ***********************
 
+export const consultaDetalhada = async (id) => {
+    let id_unicas_etapas = [];
+    let id_unicas_etapas_mp = [];
+    let percentual_concluido = 0;
+    let dencidade_estimada = 0;
+
+    const etapaEhUnica = (id_etapa)=>{
+        if(!id_unicas_etapas.includes(id_etapa)){
+            id_unicas_etapas.push(id_etapa);
+            return true;
+        }
+        return false;
+    }
+
+    const etapa_mpEhUnica = (id_etapa_mp)=>{
+        if(!id_unicas_etapas_mp.includes(id_etapa_mp)){
+            id_unicas_etapas_mp.push(id_etapa_mp);
+            return true;
+        }
+        return false;
+    }
+
+    let nutrientes = [];
+    const addNutrientes = (id,nome,formula,percentual_origem,mp,)=>{
+        let nutriente = nutrientes.find(nutriente => nutriente.id == id);
+        if(!nutriente){            
+            nutrientes.push({
+                "index": nutrientes.length-1,
+                "id": id,
+                "nome": nome,
+                "formula": formula,
+                "percentual": percentual_origem,
+                "origem":[{
+                    "mp":mp,
+                    "percentual":percentual_origem
+                }]
+            });
+        }
+        else{
+            let i = nutriente.index;            
+            nutrientes[i].percentual += percentual_origem;
+            nutrientes[i].origem.push({
+                "mp":mp,
+                "percentual":percentual_origem
+            });
+        }
+        return false;
+    }
+    
+
+    try {
+        const cx = await pool.getConnection();
+        const cmdSql = 'SELECT * FROM projeto_detalhado WHERE projeto_id = ?;';
+        const [dados, meta_dados] = await cx.query(cmdSql, [id]);
+        cx.release();
+
+        let etapas = [];
+        for(const elemento of dados){  
+            if(etapaEhUnica(elemento.etapa_id)){
+                etapas.push({
+                    "id": elemento.etapa_id,
+                    "nome": elemento.etapa_nome,
+                    "descricao": elemento.etapa_descricao,
+                    "ordem": elemento.etapa_ordem,
+                    "etapa_mp":[
+
+                    ]
+                });
+            }
+            if(etapa_mpEhUnica(elemento.etapa_mp_id)){
+                etapas[(etapas.length)-1].etapa_mp.push({
+                    "id": elemento.etapa_mp_id,
+                    "materia_prima": elemento.materia_prima_nome,
+                    "percentual": elemento.etapa_mp_percentual,
+                    "tempo_agitacao": elemento.etapa_mp_tempo_agitacao,
+                    "observacao": elemento.etapa_mp_observacao,
+                    "ordem": elemento.etapa_mp_ordem
+                });
+                percentual_concluido += elemento.etapa_mp_percentual;
+                dencidade_estimada +=elemento.parcial_densidade?elemento.parcial_densidade:0;
+            }
+            addNutrientes(elemento.nutriente_id,elemento.nutriente_nome, elemento.nutriente_formula, elemento.percentual_origem,elemento.materia_prima_nome)
+            
+        }
+
+        let projeto = {
+            "id":             dados[0].projeto_id,
+            "nome":           dados[0].projeto_nome,
+            "descricao":      dados[0].projeto_descricao,
+            "data_inicio":    dados[0].projeto_data_inicio,
+            "data_termino":   dados[0].projeto_data_termino,
+            "densidade":      dados[0].projeto_densidade,
+            "ph":             dados[0].projeto_ph,
+            "tipo":           dados[0].projeto_tipo,
+            "aplicacao":      dados[0].projeto_aplicacao,
+            "natureza_fisica":dados[0].projeto_natureza_fisica,
+            "status":         dados[0].projeto_status,
+            "etapas":etapas,
+            "nutrientes":nutrientes,
+            "percentual_concluido": percentual_concluido,
+            "percentual_restante": 100 - percentual_concluido,
+            "dencidade_estimada": dencidade_estimada
+        }
+
+        return [projeto];
+    } catch (error) {
+        throw error;
+    }
+};

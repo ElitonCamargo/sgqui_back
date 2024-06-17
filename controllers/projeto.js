@@ -73,3 +73,14 @@ export const alterar = async (req, res)=>{
     }
 }
 
+// *************** Consultas Entre vária entidades ***********************
+export const consultaDetalhada = async (req, res)=>{    
+    try {
+        let id = req.params.id;
+        const data = await Projeto.consultaDetalhada(id);
+        return View.result(res,'GET',data);
+    } catch (error) {
+        return View.erro(res, error);
+    }
+}
+
