@@ -1,12 +1,11 @@
 import express from 'express';
-import * as usuario from '../controllers/usuario.js';
+import * as configuracao from '../controllers/configuracao.js';
 
 const router = express.Router();
-
-router.get('/usuario/logado',usuario.consultarLogado);
-router.get('/usuario',usuario.consultar);
-router.get('/usuario/:id',usuario.consultarPorId);
-router.put('/usuario/:id',usuario.alterar);
-router.post('/usuario',usuario.cadastrar);
+router.post('/configuracao',configuracao.cadastrar);
+router.get('/configuracao',configuracao.consultar);
+router.get('/configuracao/:id',configuracao.consultarPorId);
+router.put('/configuracao/:id',configuracao.alterar);
+router.delete('/configuracao/:id',configuracao.deletar);
 
 export default router;

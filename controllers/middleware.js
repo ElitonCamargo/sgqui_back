@@ -10,6 +10,7 @@ export const middlewareAutenticacao = (req, res, next) => {
                 success: false,
                 quant: 0,
                 data: [],
+                status:498,
                 erro: 'Token de autenticação não fornecido'
             };
             return res.status(498).json(retorno);
@@ -22,6 +23,7 @@ export const middlewareAutenticacao = (req, res, next) => {
                 success: false,
                 quant: 0,
                 data: [],
+                status:498,
                 erro: 'Formato de token inválido'
             };
             return res.status(498).json(retorno);
@@ -33,6 +35,7 @@ export const middlewareAutenticacao = (req, res, next) => {
                     success: false,
                     quant: 0,
                     data: [],
+                    status:498,
                     erro: 'Token de autenticação inválido'
                 }
                 return res.status(498).json(retorno);
@@ -47,6 +50,7 @@ export const middlewareAutenticacao = (req, res, next) => {
             success: false,
             quant: 0,
             data: [],
+            status:500,
             erro: 'Erro interno do servidor: '+ error
         }
         return res.status(500).json(retorno);
