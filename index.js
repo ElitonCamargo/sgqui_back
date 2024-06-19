@@ -11,7 +11,8 @@ import usuario from './routes/usuario.js';
 import projeto from './routes/projeto.js';
 import etapa from './routes/etapa.js';
 import etapa_mp from './routes/etapa_mp.js';
-import configuracao from './routes/configuracao.js'
+import configuracao from './routes/configuracao.js';
+import upload from './controllers/upload.js';
 
 const app = express();
 
@@ -39,6 +40,8 @@ app.get('/',(req,res)=>{
         ]
     });
 });
+
+app.use('/',upload);
 
 // Rotas de autenticação
 app.use('/', autenticacao);
