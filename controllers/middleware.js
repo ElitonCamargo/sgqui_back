@@ -40,8 +40,7 @@ export const middlewareAutenticacao = (req, res, next) => {
                 }
                 return res.status(498).json(retorno);
             }
-            console.log()
-            console.log(decoded);
+    
             req.loginId = decoded.usuario; // Armazena os dados do usuário decodificados na solicitação            
             next();
         });

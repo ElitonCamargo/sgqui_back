@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import bodyParser from 'body-parser';
 import autenticacao from './routes/autenticacao.js';
 import * as middleware from './controllers/middleware.js';
@@ -42,13 +44,21 @@ app.get('/',(req,res)=>{
     });
 });
 
-app.use('/',upload);
-
 // Rotas de autenticação
 app.use('/', autenticacao);
 
 // Middleware de autenticação JWT
 app.use(middleware.middlewareAutenticacao);
+
+// Servir arquivos estáticos da pasta uploads
+// Obtenha o diretório atual usando import.meta.url
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use('/arquivos', express.static(path.join(__dirname, 'uploads')));
+// app.use('/arquivos',(req, res)=>{
+//     const rootDomain = req.protocol + '://' + req.get('host');
+//     express.static(path.join(rootDomain, '/uploads'))
+// })
 
 // Rotas protegidas pelo middlewareAutenticacao
 app.use('/', usuario);
@@ -60,6 +70,8 @@ app.use('/', projeto);
 app.use('/',etapa);
 app.use('/',etapa_mp);
 app.use('/',configuracao);
+app.use('/',upload);
+
 
 app.use((req, res, next) => {
     let retorno = {
