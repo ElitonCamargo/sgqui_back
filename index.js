@@ -37,6 +37,7 @@ app.get('/',(req,res)=>{
             `${rootDomain}/etepa`,
             `${rootDomain}/etepa_mp`,
             `${rootDomain}/configuracao`,
+            `${rootDomain}/upload`,
         ]
     });
 });
