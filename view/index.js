@@ -16,8 +16,8 @@ const result = (res, method, data,info_erro=false)=>{
         } else {
             if(info_erro){
                 retorno.erro = info_erro
-                retorno.status = 404
             }
+            retorno.status = 404
             return res.status(404).json(retorno);
         }
     }

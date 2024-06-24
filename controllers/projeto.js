@@ -31,6 +31,16 @@ export const consultarPorId = async (req, res)=>{
     }
 }
 
+export const duplicar = async (req, res)=>{    
+    try {
+        let id = req.params.id;
+        const data = await Projeto.duplicar(id);
+        return View.result(res,'GET',data,"Projeto base não encontrado");
+    } catch (error) {
+        return View.erro(res, error);
+    }
+}
+
 export const consultarPorData = async (req, res)=>{    
     try {
         let inicio = req.params.inicio;

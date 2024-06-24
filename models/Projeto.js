@@ -33,7 +33,18 @@ export const cadastrar = async (projeto={},loginId=0) => {
     }
 };
 
-
+export const duplicar = async (id = 0) => {
+    try {
+        const cx = await pool.getConnection();
+        const cmdSql = 'CALL duplicar_projeto(?)';
+        const [dados] = await cx.query(cmdSql, [id]);
+        
+        cx.release();
+        return dados[0];
+    } catch (error) {
+        throw error;
+    }
+};
 
 export const alterar = async (projeto={},loginId=0) => {
     try {
@@ -215,27 +226,29 @@ export const consultaDetalhada = async (id) => {
             addNutrientes(elemento.nutriente_id,elemento.nutriente_nome, elemento.nutriente_formula, elemento.percentual_origem,elemento.materia_prima_nome)
             
         }
-
-        let projeto = {
-            "id":             dados[0].projeto_id,
-            "nome":           dados[0].projeto_nome,
-            "descricao":      dados[0].projeto_descricao,
-            "data_inicio":    dados[0].projeto_data_inicio,
-            "data_termino":   dados[0].projeto_data_termino,
-            "densidade":      dados[0].projeto_densidade,
-            "ph":             dados[0].projeto_ph,
-            "tipo":           dados[0].projeto_tipo,
-            "aplicacao":      dados[0].projeto_aplicacao,
-            "natureza_fisica":dados[0].projeto_natureza_fisica,
-            "status":         dados[0].projeto_status,
-            "etapas":etapas,
-            "nutrientes":nutrientes,
-            "percentual_concluido": percentual_concluido,
-            "percentual_restante": 100 - percentual_concluido,
-            "dencidade_estimada": dencidade_estimada
+        if(dados[0]){
+            let projeto = {
+                "id":             dados[0].projeto_id,
+                "nome":           dados[0].projeto_nome,
+                "descricao":      dados[0].projeto_descricao,
+                "data_inicio":    dados[0].projeto_data_inicio,
+                "data_termino":   dados[0].projeto_data_termino,
+                "densidade":      dados[0].projeto_densidade,
+                "ph":             dados[0].projeto_ph,
+                "tipo":           dados[0].projeto_tipo,
+                "aplicacao":      dados[0].projeto_aplicacao,
+                "natureza_fisica":dados[0].projeto_natureza_fisica,
+                "status":         dados[0].projeto_status,
+                "etapas":etapas,
+                "nutrientes":nutrientes,
+                "percentual_concluido": percentual_concluido,
+                "percentual_restante": 100 - percentual_concluido,
+                "dencidade_estimada": dencidade_estimada
+            }
+    
+            return [projeto];
         }
-
-        return [projeto];
+        return[];
     } catch (error) {
         throw error;
     }
