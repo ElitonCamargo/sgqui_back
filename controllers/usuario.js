@@ -1,24 +1,27 @@
 import * as Usuario from '../models/Usuario.js';
-import jwt from 'jsonwebtoken';
+import * as Token from '../models/Token.js';
 import * as View from '../view/index.js';
 
 
-export const login =  async (req, res) => {
-    const key_api = '%gtHy(86$kÇ.kb6i';
+export const login =  async (req, res) => {  
     const { email, senha } = req.body;
-    try {  
-
+    try {
         const usuario = await Usuario.login(email,senha);
         if(usuario){
-            const expiracao = new Date();// Calcular a data de expiração
-            expiracao.setDate(expiracao.getDate() + 1); // Adiciona 1 dia
-            const token = jwt.sign({ usuario: usuario.id, exp: Math.floor(expiracao.getTime() / 1000) }, key_api);        
-            let data = [
-                {token: `Bearer ${token}`},
-                {expiracao: expiracao},
-                {usuario: usuario}
-            ];
-            return View.result(res,'GET',data);
+            const horas_validade = 24;
+            const _token = await Token.criar(usuario.id,horas_validade);
+            if(_token){
+                let data = [
+                    {token: `Bearer ${_token.chave_token}`},
+                    {expiracao: _token.validade},
+                    {usuario: usuario}
+                ];
+                return View.result(res,'GET',data);
+            }
+            else{
+                const error = { mensagem: 'Erro ao gerar token'};
+                throw error;
+            }
         }
         else{
             return View.result(res,'GET',[],'Credenciais inválidas');       
