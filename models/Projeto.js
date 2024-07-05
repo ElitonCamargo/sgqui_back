@@ -79,7 +79,7 @@ export const alterar = async (projeto={},loginId=0) => {
 export const consultar = async (filtro = '') => {
     try {
         const cx = await pool.getConnection();
-        const cmdSql = 'SELECT * FROM projeto WHERE nome LIKE ? or descricao LIKE ?;';
+        const cmdSql = 'SELECT * FROM projeto WHERE nome LIKE ? or descricao LIKE ? ORDER BY updatedAt DESC;';
         const [dados, meta_dados] = await cx.query(cmdSql, [`%${filtro}%`,`%${filtro}%`]);
         cx.release();
         return dados;
@@ -91,6 +91,7 @@ export const consultar = async (filtro = '') => {
 export const consultarPorId = async (id) => {
     try {
         const cx = await pool.getConnection();
+        cx.query("CALL projeto_marcarVisualizacao(?)", [id]);
         const cmdSql = 'SELECT * FROM projeto WHERE id = ?;';
         const [dados, meta_dados] = await cx.query(cmdSql, [id]);
         cx.release();
@@ -103,10 +104,13 @@ export const consultarPorId = async (id) => {
 export const consultarPorData = async (data_inicio="", data_termino="") => {
     try {
         const cx = await pool.getConnection();
-        const cmdSql = `SELECT * FROM projeto
+        const cmdSql = `
+        SELECT * FROM projeto
         WHERE (data_inicio BETWEEN '${data_inicio}' AND '${data_termino}')
            OR (data_termino BETWEEN '${data_inicio}' AND '${data_termino}')
-           OR (data_inicio <= '${data_inicio}' AND data_termino >= '${data_termino}');
+           OR (data_inicio <= '${data_inicio}' AND data_termino >= '${data_termino}')
+        ORDER BY updatedAt DESC
+        ;
         `;
         const [dados, meta_dados] = await cx.query(cmdSql);
         cx.release();
@@ -119,7 +123,7 @@ export const consultarPorData = async (data_inicio="", data_termino="") => {
 export const consultarPorStatus = async (status='') => {
     try {
         const cx = await pool.getConnection();
-        const cmdSql = `SELECT * FROM projeto WHERE JSON_UNQUOTE(JSON_EXTRACT(status, '$[0].status')) LIKE ?;`; 
+        const cmdSql = `SELECT * FROM projeto WHERE JSON_UNQUOTE(JSON_EXTRACT(status, '$[0].status')) LIKE ? ORDER BY updatedAt DESC;`; 
         const [dados, meta_dados] = await cx.query(cmdSql,[status]);
         cx.release();
         return dados;
@@ -194,6 +198,7 @@ export const consultaDetalhada = async (id) => {
 
     try {
         const cx = await pool.getConnection();
+        cx.query("CALL projeto_marcarVisualizacao(?)", [id]);
         const cmdSql = 'SELECT * FROM projeto_detalhado WHERE projeto_id = ?;';
         const [dados, meta_dados] = await cx.query(cmdSql, [id]);
         cx.release();
