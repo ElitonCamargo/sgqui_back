@@ -1,6 +1,6 @@
 // ****************** Configuração do banco de dados ************************** //
 const developmentConfig = {
-    host: "127.0.0.1",
+    host: "100.26.59.163",
     port: 3306,
     name: "api_sg_qui",
     dialect: "mysql",
