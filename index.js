@@ -85,6 +85,20 @@ app.use((req, res, next) => {
     res.status(500).json(retorno);
 });
 
+
+// Middleware para tratar rotas inválidas
+app.use((req, res, next) => {
+    let retorno = {
+        success: false,
+        quant: 0,
+        data: [],
+        erro: 'Rota inválida',
+        status: 404
+    }
+    res.status(404).json(retorno);
+});
+
+
 const PORT = 8080; 
 app.listen(PORT,()=>{
     console.log('Sistema inicializado: ', `Acesso: http://localhost:${PORT}`);
