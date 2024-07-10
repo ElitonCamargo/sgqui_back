@@ -147,56 +147,56 @@ export const deletar = async (id) => {
 // *************** Consultas Entre vária entidades ***********************
 
 export const consultaDetalhada = async (id) => {
-    let id_unicas_etapas = [];
-    let id_unicas_etapas_mp = [];
-    let percentual_concluido = 0;
-    let dencidade_estimada = 0;
+    try {
+        let id_unicas_etapas = [];
+        let id_unicas_etapas_mp = [];
+        let percentual_concluido = 0;
+        let dencidade_estimada = 0;
 
-    const etapaEhUnica = (id_etapa)=>{
-        if(!id_unicas_etapas.includes(id_etapa)){
-            id_unicas_etapas.push(id_etapa);
-            return true;
+        const etapaEhUnica = (id_etapa)=>{
+            if(!id_unicas_etapas.includes(id_etapa)){
+                id_unicas_etapas.push(id_etapa);
+                return true;
+            }
+            return false;
         }
-        return false;
-    }
 
-    const etapa_mpEhUnica = (id_etapa_mp)=>{
-        if(!id_unicas_etapas_mp.includes(id_etapa_mp)){
-            id_unicas_etapas_mp.push(id_etapa_mp);
-            return true;
+        const etapa_mpEhUnica = (id_etapa_mp)=>{
+            if(!id_unicas_etapas_mp.includes(id_etapa_mp)){
+                id_unicas_etapas_mp.push(id_etapa_mp);
+                return true;
+            }
+            return false;
         }
-        return false;
-    }
 
-    let nutrientes = [];
-    const addNutrientes = (id,nome,formula,percentual_origem,mp,)=>{
-        let nutriente = nutrientes.find(nutriente => nutriente.id == id);
-        if(!nutriente){            
-            nutrientes.push({
-                "index": nutrientes.length-1,
-                "id": id,
-                "nome": nome,
-                "formula": formula,
-                "percentual": percentual_origem,
-                "origem":[{
+        let [index_nutrientes, nutrientes] = [0,[]];
+
+        const addNutrientes = (id,nome,formula,percentual_origem,mp,)=>{
+            let nutriente = nutrientes.find(nutriente => nutriente.id == id);            
+            if(!nutriente){            
+                nutrientes.push({
+                    "index": index_nutrientes,
+                    "id": id,
+                    "nome": nome,
+                    "formula": formula,
+                    "percentual": percentual_origem,
+                    "origem":[{
+                        "mp":mp,
+                        "percentual":percentual_origem
+                    }]
+                });
+                index_nutrientes++;
+            }
+            else{                
+                let i = nutriente.index;                          
+                nutrientes[i].percentual += percentual_origem;
+                nutrientes[i].origem.push({
                     "mp":mp,
                     "percentual":percentual_origem
-                }]
-            });
-        }
-        else{
-            let i = nutriente.index;            
-            nutrientes[i].percentual += percentual_origem;
-            nutrientes[i].origem.push({
-                "mp":mp,
-                "percentual":percentual_origem
-            });
-        }
-        return false;
-    }
+                });
+            }
+        }  
     
-
-    try {
         const cx = await pool.getConnection();
         cx.query("CALL projeto_marcarVisualizacao(?)", [id]);
         const cmdSql = 'SELECT * FROM projeto_detalhado WHERE projeto_id = ?;';
@@ -255,6 +255,7 @@ export const consultaDetalhada = async (id) => {
         }
         return[];
     } catch (error) {
+        console.error(error);
         throw error;
     }
 };

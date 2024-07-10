@@ -95,7 +95,11 @@ export const alterar = async (etapa={}) => {
 export const alterarOrdem = async (ordemEtapa = []) => {
     try {
         // Converte a lista de etapas para JSON
-        const ordemEtapaJson = JSON.stringify(ordemEtapa);
+        let ordemEtapaJson = ordemEtapa;
+        if (typeof ordemEtapaJson !== 'string') 
+        {
+            ordemEtapaJson = JSON.stringify(ordemEtapaJson);
+        }
 
         // Obtém uma conexão do pool de conexões.
         const cx = await pool.getConnection();
@@ -116,6 +120,7 @@ export const alterarOrdem = async (ordemEtapa = []) => {
             // Lança o erro para ser tratado pelo bloco externo.
             throw err;
         }
+
     } catch (error) {
         // Lança qualquer erro que ocorra durante a execução das operações.
         throw error;

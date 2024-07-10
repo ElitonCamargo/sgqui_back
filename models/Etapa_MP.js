@@ -1,12 +1,3 @@
-/* Funções feitas
-    consultarPorId,
-    consultarPorEtapa => consulta as matérias primas que uma etapa possúi
-    cadastrar,
-    alterar,
-    delete
-
-*/
-
 import pool from '../database/data.js';
 
 export const cadastrar = async (etapa_mp={}) => {
@@ -155,8 +146,15 @@ export const deletar = async (id) => {
 
 export const alterarOrdem = async (ordemetapa_mp = []) => {
     try {
-        const ordemetapa_mpJson = JSON.stringify(ordemetapa_mp);
+        
+        // Converte a lista de etapas para JSON
+        let ordemetapa_mpJson = ordemetapa_mp;
+        if (typeof ordemetapa_mpJson !== 'string') 
+        {
+            ordemetapa_mpJson = JSON.stringify(ordemetapa_mpJson);
+        }
 
+        
         const cx = await pool.getConnection();
 
         try {
