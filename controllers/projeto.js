@@ -87,6 +87,11 @@ export const alterar = async (req, res)=>{
 export const consultaDetalhada = async (req, res)=>{    
     try {
         let id = req.params.id;
+        // Verifique se id é um número inteiro
+        if (isNaN(id)) {
+            throw `O valor de id deve ser um número inteiro, mas recebeu: ${id}`;
+        }
+                
         const data = await Projeto.consultaDetalhada(id);
         return View.result(res,'GET',data);
     } catch (error) {

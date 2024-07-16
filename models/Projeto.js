@@ -169,13 +169,12 @@ export const consultaDetalhada = async (id) => {
             return false;
         }
 
-        let [index_nutrientes, nutrientes] = [0,[]];
+        let nutrientes = [];
 
         const addNutrientes = (id,nome,formula,percentual_origem,mp,)=>{
-            let nutriente = nutrientes.find(nutriente => nutriente.id == id);            
-            if(!nutriente){            
+            let index_nutriente = nutrientes.findIndex(nutriente => nutriente.id == id);           
+            if(index_nutriente == -1){ // Nutriente ainda não existe.     
                 nutrientes.push({
-                    "index": index_nutrientes,
                     "id": id,
                     "nome": nome,
                     "formula": formula,
@@ -185,12 +184,10 @@ export const consultaDetalhada = async (id) => {
                         "percentual":percentual_origem
                     }]
                 });
-                index_nutrientes++;
             }
-            else{                
-                let i = nutriente.index;                          
-                nutrientes[i].percentual += percentual_origem;
-                nutrientes[i].origem.push({
+            else{ // Nutriente já existe                            
+                nutrientes[index_nutriente].percentual += percentual_origem;
+                nutrientes[index_nutriente].origem.push({
                     "mp":mp,
                     "percentual":percentual_origem
                 });

@@ -57,10 +57,7 @@ app.use(middleware.middlewareAutenticacao);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use('/arquivos', express.static(path.join(__dirname, 'uploads')));
-// app.use('/arquivos',(req, res)=>{
-//     const rootDomain = req.protocol + '://' + req.get('host');
-//     express.static(path.join(rootDomain, '/uploads'))
-// })
+
 
 // Rotas protegidas pelo middlewareAutenticacao
 app.use('/', usuario);
@@ -86,6 +83,18 @@ app.use((req, res, next) => {
     res.status(404).json(retorno);
 });
 
+// Middleware de tratamento de erros
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    let retorno = {
+        success: false,
+        quant: 0,
+        data: [],
+        erro: 'Erro interno do servidor',
+        status: 500
+    }
+    res.status(500).json(retorno);
+});
 
 const PORT = 8080; 
 app.listen(PORT,()=>{
