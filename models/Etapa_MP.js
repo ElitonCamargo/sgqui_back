@@ -155,7 +155,6 @@ export const alterarOrdem = async (ordemetapa_mp = []) => {
         {
             ordemetapa_mpJson = JSON.stringify(ordemetapa_mpJson);
         }
-
         
         const cx = await pool.getConnection();
 
