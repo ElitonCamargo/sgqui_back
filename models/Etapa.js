@@ -93,7 +93,6 @@ export const alterar = async (etapa={}) => {
 
 // Define e exporta uma função assíncrona chamada 'alterarOrdem', que reorganiza a ordem das etapas dentro de um projeto.
 export const alterarOrdem = async (ordemEtapa = []) => {
-    console.log(ordemEtapa);
     try {
         // Converte a lista de etapas para JSON
         let ordemEtapaJson = ordemEtapa;
