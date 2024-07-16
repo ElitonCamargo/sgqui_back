@@ -148,6 +148,7 @@ export const alterarOrdem = async (ordemetapa_mp = []) => {
     try {
         
         // Converte a lista de etapas para JSON
+        console.log(ordemetapa_mp);
         let ordemetapa_mpJson = ordemetapa_mp;
         if (typeof ordemetapa_mpJson !== 'string') 
         {
