@@ -161,8 +161,8 @@ export const consultaDetalhada = async (id) => {
             return false;
         }
 
-        const etapa_mpEhUnica = (id_etapa_mp)=>{
-            if(!id_unicas_etapas_mp.includes(id_etapa_mp)){
+        const etapa_mpEhUnica = (id_etapa_mp)=>{ 
+            if((!(id_etapa_mp == null))&&(!id_unicas_etapas_mp.includes(id_etapa_mp))){
                 id_unicas_etapas_mp.push(id_etapa_mp);
                 return true;
             }
@@ -172,25 +172,27 @@ export const consultaDetalhada = async (id) => {
         let nutrientes = [];
 
         const addNutrientes = (id,nome,formula,percentual_origem,mp,)=>{
-            let index_nutriente = nutrientes.findIndex(nutriente => nutriente.id == id);           
-            if(index_nutriente == -1){ // Nutriente ainda não existe.     
-                nutrientes.push({
-                    "id": id,
-                    "nome": nome,
-                    "formula": formula,
-                    "percentual": percentual_origem,
-                    "origem":[{
+            if(!(id == null)){
+                let index_nutriente = nutrientes.findIndex(nutriente => nutriente.id == id);           
+                if(index_nutriente == -1){ // Nutriente ainda não existe.     
+                    nutrientes.push({
+                        "id": id,
+                        "nome": nome,
+                        "formula": formula,
+                        "percentual": percentual_origem,
+                        "origem":[{
+                            "mp":mp,
+                            "percentual":percentual_origem
+                        }]
+                    });
+                }
+                else{ // Nutriente já existe                            
+                    nutrientes[index_nutriente].percentual += percentual_origem;
+                    nutrientes[index_nutriente].origem.push({
                         "mp":mp,
                         "percentual":percentual_origem
-                    }]
-                });
-            }
-            else{ // Nutriente já existe                            
-                nutrientes[index_nutriente].percentual += percentual_origem;
-                nutrientes[index_nutriente].origem.push({
-                    "mp":mp,
-                    "percentual":percentual_origem
-                });
+                    });
+                }
             }
         }  
     
