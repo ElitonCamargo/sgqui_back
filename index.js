@@ -30,7 +30,7 @@ app.get('/',(req,res)=>{
     res.status(200).json({     
         status_server: 'ok',
         dominio_raiz : rootDomain,
-        atualização: '29/07/2024 - 21:07',
+        atualização: '09/08/2024 - 13:03',
         rotas:[
             `${rootDomain}/usuario/login`,
             `${rootDomain}/usuario`,
