@@ -154,7 +154,8 @@ export const consultaDetalhada = async (id) => {
         let dencidade_estimada = 0;
 
         const etapaEhUnica = (id_etapa)=>{
-            if(!id_unicas_etapas.includes(id_etapa)){
+
+            if((!(id_etapa == null))&&(!id_unicas_etapas.includes(id_etapa))){
                 id_unicas_etapas.push(id_etapa);
                 return true;
             }
