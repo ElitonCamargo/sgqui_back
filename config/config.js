@@ -2,7 +2,7 @@
 const developmentConfig = {
     host: "100.26.59.163",
     port: 3306,
-    name: "api_sg_qui",
+    name: "api_sg_qui_dev",
     dialect: "mysql",
     user: "admin_api",
     password: "%gt&j7&gfE0u1895"
