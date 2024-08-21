@@ -97,7 +97,7 @@ app.use((err, req, res, next) => {
     res.status(500).json(retorno);
 });
 
-const PORT = 8080; 
+const PORT = 8081; 
 app.listen(PORT,()=>{
     console.log('Sistema inicializado: ', `Acesso: http://localhost:${PORT}`);
 });
