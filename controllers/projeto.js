@@ -13,7 +13,8 @@ export const consultar = async (req, res)=>{
             data = await Projeto.consultarPorStatus(status);
         }
         else{
-            data = await Projeto.consultar();
+            let filtroAvancado = req.body;
+            data = await Projeto.consultar('',filtroAvancado);
         }
         return View.result(res,'GET',data);
     } catch (error) {

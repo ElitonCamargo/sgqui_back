@@ -76,8 +76,9 @@ export const alterar = async (projeto={},loginId=0) => {
     }
 };
 
-export const consultar = async (filtro = '') => {
+export const consultar = async (filtro = '',filtroAvancado=[]) => {
     try {
+        console.log(filtro, filtroAvancado);
         const cx = await pool.getConnection();
         const cmdSql = 'SELECT * FROM projeto WHERE nome LIKE ? or descricao LIKE ? ORDER BY updatedAt DESC;';
         const [dados, meta_dados] = await cx.query(cmdSql, [`%${filtro}%`,`%${filtro}%`]);
