@@ -5,16 +5,21 @@ export const consultar = async (req, res)=>{
     try {
         let nome = req.query.nome;
         let status = req.query.status;
+        let filtro_avancado = req.query.filtro_avancado;
         let data = [];
-        if(nome){
-            data = await Projeto.consultar(nome);
-        }
-        else if(status){
-            data = await Projeto.consultarPorStatus(status);
+        if(!filtro_avancado){
+            if(nome){
+                data = await Projeto.consultar(nome);
+            }
+            else if(status){
+                data = await Projeto.consultarPorStatus(status);
+            }
+            else{
+                data = await Projeto.consultar('');
+            }
         }
         else{
-            let filtroAvancado = req.body;
-            data = await Projeto.consultar('',filtroAvancado);
+            data = await Projeto.consultarFiltroAvacado(filtro_avancado);
         }
         return View.result(res,'GET',data);
     } catch (error) {

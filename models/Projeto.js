@@ -76,9 +76,8 @@ export const alterar = async (projeto={},loginId=0) => {
     }
 };
 
-export const consultar = async (filtro = '',filtroAvancado=[]) => {
-    try {
-        console.log(filtro, filtroAvancado);
+export const consultar = async (filtro = '') => {
+    try {        
         const cx = await pool.getConnection();
         const cmdSql = 'SELECT * FROM projeto WHERE nome LIKE ? or descricao LIKE ? ORDER BY updatedAt DESC;';
         const [dados, meta_dados] = await cx.query(cmdSql, [`%${filtro}%`,`%${filtro}%`]);
@@ -88,6 +87,212 @@ export const consultar = async (filtro = '',filtroAvancado=[]) => {
         throw error;
     }
 };
+
+const filtroAvancado = (projetos=[], filtroConsulta)=>{
+    let dados_essenciais = projetos.map((projeto)=>{
+        let result = {
+            projeto_id: projeto.id,
+            materias_primas:[],
+            nutrientes:[]
+        }
+        projeto.etapas.forEach(etapa =>{
+            etapa.etapa_mp.forEach(mp=>{
+                result.materias_primas.push({
+                    id: mp.mp_id,
+                    percentual: mp.percentual
+                })
+            })
+        })
+        projeto.nutrientes.forEach(nutr => {
+            result.nutrientes.push({
+                id: nutr.id,
+                percentual: nutr.percentual
+            })
+        });
+        return result;
+    });
+    
+    const filtrar = (dados_essenciais=[] , filtroConsulta = {}) => {
+        return dados_essenciais.filter(projeto => {
+               const todasMateriasPrimas = filtroConsulta.materia_prima.every(filtroMateriaPrima => {
+                return projeto.materias_primas.some(materiaPrima => {
+                    return materiaPrima.id == filtroMateriaPrima.id && (materiaPrima.percentual >= filtroMateriaPrima.percentual[0] && materiaPrima.percentual <= filtroMateriaPrima.percentual[1]);
+                });
+            });    
+
+            const todosNutrientes = filtroConsulta.nutriente.every(filtroNutriente => {
+                return projeto.nutrientes.some(nutriente => {
+                    return nutriente.id == filtroNutriente.id && (nutriente.percentual >= filtroNutriente.percentual[0] && nutriente.percentual <= filtroNutriente.percentual[1]);
+                });
+            });
+            return todasMateriasPrimas && todosNutrientes;
+        });
+    };
+    return (filtrar(dados_essenciais, filtroConsulta)).map(projeto=>projeto.projeto_id); //Retorna apenas os IDs
+    // return filtrar(dados_essenciais, filtroConsulta);
+}
+
+export const consultarFiltroAvacado = async (filtro = []) => {
+    try {
+        let filtroConsulta = {
+            materia_prima:[], 
+            nutriente:[] 
+        }
+        filtro = JSON.parse(filtro);
+        // Separar os filtros em materia_prima e nutriente
+        filtro.forEach(elemento => {
+            if (elemento.tipo === "nutriente") {
+                filtroConsulta.nutriente.push({id: elemento.id, percentual: [elemento.percentual[0],elemento.percentual[1]]});
+            } else{
+                filtroConsulta.materia_prima.push({id: elemento.id, percentual: [elemento.percentual[0],elemento.percentual[1]]});
+            }
+        });
+
+        let cmdSelectMp = '';
+        let cmdSelectNut = '';
+
+        // Construir a parte do SQL para materia_prima
+        if (filtroConsulta.materia_prima.length > 0) {
+            cmdSelectMp = "SELECT DISTINCT projeto_id FROM projeto_detalhado WHERE ";
+            cmdSelectMp += filtroConsulta.materia_prima.map(elemento =>
+                `(materia_prima_id = ${elemento.id} AND etapa_mp_percentual BETWEEN ${elemento.percentual[0]} AND ${elemento.percentual[1]})`
+            ).join(' OR ');
+        }
+
+        // Construir a parte do SQL para nutriente
+        if (filtroConsulta.nutriente.length > 0) {
+            cmdSelectNut = "SELECT DISTINCT projeto_id FROM percentual_nutriente_projeto WHERE ";
+            cmdSelectNut += filtroConsulta.nutriente.map(elemento =>
+                `(nutriente_id = ${elemento.id} AND percentual_nutriente BETWEEN ${elemento.percentual[0]} AND ${elemento.percentual[1]})`
+            ).join(' OR ');
+        }
+
+        // Construir o comando SQL final
+        const cmdSql = `
+            SELECT projeto_detalhado.* 
+            FROM projeto_detalhado
+            INNER JOIN (
+                ${cmdSelectMp ? cmdSelectMp : ''} 
+                ${cmdSelectMp && cmdSelectNut ? ' UNION ' : ''} 
+                ${cmdSelectNut ? cmdSelectNut : ''} 
+            ) AS pnp
+            ON projeto_detalhado.projeto_id = pnp.projeto_id;
+        `;
+
+        // Executar a consulta no banco de dados
+        const cx = await pool.getConnection();
+        const [dados, meta_dados] = await cx.query(cmdSql.trim());
+        cx.release();
+        let projetos = estruturarProjeto(dados);        
+        let IDs_projeto_compativeis = filtroAvancado(projetos, filtroConsulta);
+        return projetos.filter(projeto=>{
+            return IDs_projeto_compativeis.some(id => id == projeto.id);
+        })
+
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const estruturarProjeto = (dados) => {
+    let projetos = [];
+    const addProjeto = (projeto = {}) => {
+        let projetoExistente = projetos.find(p => p.id === projeto.projeto_id);
+        if (!projetoExistente) {
+            projetoExistente = {
+                "id": projeto.projeto_id,
+                "nome": projeto.projeto_nome,
+                "descricao": projeto.projeto_descricao,
+                "data_inicio": projeto.projeto_data_inicio,
+                "data_termino": projeto.projeto_data_termino,
+                "densidade": projeto.projeto_densidade,
+                "ph": projeto.projeto_ph,
+                "tipo": projeto.projeto_tipo,
+                "aplicacao": projeto.projeto_aplicacao,
+                "natureza_fisica": projeto.projeto_natureza_fisica,
+                "status": projeto.projeto_status,
+                "etapas": [],
+                "nutrientes": [],
+                "percentual_concluido": 0,
+                "dencidade_estimada": 0
+            };
+            projetos.push(projetoExistente);
+        }
+        return projetoExistente;
+    }
+
+    const addEtapasProjeto = (etapa, projeto) => {
+        let etapaExistente = projeto.etapas.find(e => e.id === etapa.etapa_id);
+        if (!etapaExistente) {
+            etapaExistente = {
+                "id": etapa.etapa_id,
+                "nome": etapa.etapa_nome,
+                "descricao": etapa.etapa_descricao,
+                "ordem": etapa.etapa_ordem,
+                "etapa_mp": []
+            };
+            projeto.etapas.push(etapaExistente);
+        }
+        return etapaExistente;
+    }
+
+    const addEtapa_MpEtapas = (etapa_mp, etapa, projeto) => {
+        if (etapa_mp.etapa_mp_id) {
+            let etapa_MpExistente = etapa.etapa_mp.find(e_mp => e_mp.id === etapa_mp.etapa_mp_id);
+            if (!etapa_MpExistente) {
+                etapa.etapa_mp.push({
+                    "id": etapa_mp.etapa_mp_id,
+                    "mp_id": etapa_mp.materia_prima_id,
+                    "materia_prima": etapa_mp.materia_prima_nome,
+                    "percentual": etapa_mp.etapa_mp_percentual,
+                    "tempo_agitacao": etapa_mp.etapa_mp_tempo_agitacao,
+                    "observacao": etapa_mp.etapa_mp_observacao,
+                    "ordem": etapa_mp.etapa_mp_ordem
+                });
+                projeto.dencidade_estimada += etapa_mp.parcial_densidade || 0;
+            }
+        }
+    }
+
+    const addNutrientes = (nutriente, projeto) => {
+        if (nutriente.nutriente_id) {
+            let index_nutriente = projeto.nutrientes.findIndex(n => n.id === nutriente.nutriente_id);
+            if (index_nutriente === -1) {
+                projeto.nutrientes.push({
+                    "id": nutriente.nutriente_id,
+                    "nome": nutriente.nutriente_nome,
+                    "formula": nutriente.nutriente_formula,
+                    "percentual": nutriente.percentual_origem,
+                    "origem": [{
+                        "mp": nutriente.materia_prima_nome,
+                        "percentual": nutriente.percentual_origem
+                    }]
+                });
+            } else {
+                projeto.nutrientes[index_nutriente].percentual += nutriente.percentual_origem;
+                projeto.nutrientes[index_nutriente].origem.push({
+                    "mp": nutriente.materia_prima_nome,
+                    "percentual": nutriente.percentual_origem
+                });
+            }
+        }
+    };
+
+    if (dados) {
+        for (const elemento of dados) {
+            let projeto_referenciado = addProjeto(elemento);
+            let etapa_referenciada = addEtapasProjeto(elemento, projeto_referenciado);
+            addEtapa_MpEtapas(elemento, etapa_referenciada, projeto_referenciado);
+            addNutrientes(elemento, projeto_referenciado);
+
+            // Atualizar percentual_concluido e densidade_estimada
+            projeto_referenciado.percentual_concluido = projeto_referenciado.etapas.reduce((total, etapa) => 
+                total + etapa.etapa_mp.reduce((subtotal, mp) => subtotal + mp.percentual, 0), 0);
+        }
+    }
+    return projetos;
+};
+
 
 export const consultarPorId = async (id) => {
     try {
@@ -121,6 +326,7 @@ export const consultarPorData = async (data_inicio="", data_termino="") => {
     }
 };
 
+
 export const consultarPorStatus = async (status='') => {
     try {
         const cx = await pool.getConnection();
@@ -148,113 +354,13 @@ export const deletar = async (id) => {
 // *************** Consultas Entre vária entidades ***********************
 
 export const consultaDetalhada = async (id) => {
-    try {
-        let id_unicas_etapas = [];
-        let id_unicas_etapas_mp = [];
-        let percentual_concluido = 0;
-        let dencidade_estimada = 0;
-
-        const etapaEhUnica = (id_etapa)=>{
-
-            if((!(id_etapa == null))&&(!id_unicas_etapas.includes(id_etapa))){
-                id_unicas_etapas.push(id_etapa);
-                return true;
-            }
-            return false;
-        }
-
-        const etapa_mpEhUnica = (id_etapa_mp)=>{ 
-            if((!(id_etapa_mp == null))&&(!id_unicas_etapas_mp.includes(id_etapa_mp))){
-                id_unicas_etapas_mp.push(id_etapa_mp);
-                return true;
-            }
-            return false;
-        }
-
-        let nutrientes = [];
-
-        const addNutrientes = (id,nome,formula,percentual_origem,mp,)=>{
-            if(!(id == null)){
-                let index_nutriente = nutrientes.findIndex(nutriente => nutriente.id == id);           
-                if(index_nutriente == -1){ // Nutriente ainda não existe.     
-                    nutrientes.push({
-                        "id": id,
-                        "nome": nome,
-                        "formula": formula,
-                        "percentual": percentual_origem,
-                        "origem":[{
-                            "mp":mp,
-                            "percentual":percentual_origem
-                        }]
-                    });
-                }
-                else{ // Nutriente já existe                            
-                    nutrientes[index_nutriente].percentual += percentual_origem;
-                    nutrientes[index_nutriente].origem.push({
-                        "mp":mp,
-                        "percentual":percentual_origem
-                    });
-                }
-            }
-        }  
-    
+    try { 
         const cx = await pool.getConnection();
         cx.query("CALL projeto_marcarVisualizacao(?)", [id]);
         const cmdSql = 'SELECT * FROM projeto_detalhado WHERE projeto_id = ?;';
         const [dados, meta_dados] = await cx.query(cmdSql, [id]);
         cx.release();
-
-        let etapas = [];
-        for(const elemento of dados){  
-            if(etapaEhUnica(elemento.etapa_id)){
-                etapas.push({
-                    "id": elemento.etapa_id,
-                    "nome": elemento.etapa_nome,
-                    "descricao": elemento.etapa_descricao,
-                    "ordem": elemento.etapa_ordem,
-                    "etapa_mp":[
-
-                    ]
-                });
-            }
-            if(etapa_mpEhUnica(elemento.etapa_mp_id)){
-                etapas[(etapas.length)-1].etapa_mp.push({
-                    "id": elemento.etapa_mp_id,
-                    "materia_prima": elemento.materia_prima_nome,
-                    "percentual": elemento.etapa_mp_percentual,
-                    "tempo_agitacao": elemento.etapa_mp_tempo_agitacao,
-                    "observacao": elemento.etapa_mp_observacao,
-                    "ordem": elemento.etapa_mp_ordem
-                });
-                percentual_concluido += elemento.etapa_mp_percentual;
-                dencidade_estimada +=elemento.parcial_densidade?elemento.parcial_densidade:0;
-            }
-            addNutrientes(elemento.nutriente_id,elemento.nutriente_nome, elemento.nutriente_formula, elemento.percentual_origem,elemento.materia_prima_nome)
-            
-        }
-        if(dados[0]){
-            let projeto = {
-                "id":             dados[0].projeto_id,
-                "nome":           dados[0].projeto_nome,
-                "descricao":      dados[0].projeto_descricao,
-                "data_inicio":    dados[0].projeto_data_inicio,
-                "data_termino":   dados[0].projeto_data_termino,
-                "densidade":      dados[0].projeto_densidade,
-                "ph":             dados[0].projeto_ph,
-                "tipo":           dados[0].projeto_tipo,
-                "aplicacao":      dados[0].projeto_aplicacao,
-                "natureza_fisica":dados[0].projeto_natureza_fisica,
-                "status":         dados[0].projeto_status,
-                "etapas":etapas,
-                "nutrientes":nutrientes,
-                "percentual_concluido": percentual_concluido,
-                "percentual_restante": 100 - percentual_concluido,
-                "dencidade_estimada": dencidade_estimada
-            }
-    
-            return [projeto];
-        }
-        return[];
+        return estruturarProjeto(dados);
     } catch (error) {
         console.error(error);
         throw error;
