@@ -1,19 +1,23 @@
 import pool from '../database/data.js';
 
-export const cadastrar = async (projeto={},loginId=0) => {
+export const cadastrar = async (projeto={},loginId=0) => {    
     try {
-
         let valores = [];
         let campos = '';
         let placeholders = '';        
         for(const key in projeto){
-            campos += `${key},`;
-            if(key != 'status'){                
+            campos += `${key},`;            
+            if(!(key == 'status' || key == 'aplicacao')){                
                 placeholders += '?,';
                 valores.push(projeto[key]);
             }
             else{
-                placeholders += `JSON_ARRAY(JSON_OBJECT('status',  '${projeto[key]}', 'data_alteracao', (SELECT CURRENT_TIMESTAMP), 'id_responsavel', '${loginId}')),`;
+                if(key == 'status')
+                    placeholders += `JSON_ARRAY(JSON_OBJECT('status',  '${projeto[key]}', 'data_alteracao', (SELECT CURRENT_TIMESTAMP), 'id_responsavel', '${loginId}')),`;
+                else {
+                    let aplic = JSON.stringify(projeto[key].splice(','));
+                    placeholders += `'${aplic}', `;
+                } 
             }
         }
         campos = campos.slice(0, -1);
@@ -51,12 +55,25 @@ export const alterar = async (projeto={},loginId=0) => {
         let valores = [];
         let cmdSql = 'UPDATE projeto SET ';
         for(const key in projeto){
-            if(key == 'status'){
-                cmdSql += `status = JSON_MERGE_PRESERVE(JSON_ARRAY(JSON_OBJECT('status', '${projeto[key]}', 'data_alteracao', (SELECT CURRENT_TIMESTAMP), 'id_responsavel', '${loginId}')),status), `;
-            }
-            else{
+            // if(key == 'status'){
+            //     cmdSql += `status = JSON_MERGE_PRESERVE(JSON_ARRAY(JSON_OBJECT('status', '${projeto[key]}', 'data_alteracao', (SELECT CURRENT_TIMESTAMP), 'id_responsavel', '${loginId}')),status), `;
+            // }
+            // else{
+            //     valores.push(projeto[key]);
+            //     cmdSql += `${key} = ?, `;
+            // }
+
+            if(!(key == 'status' || key == 'aplicacao')){                
                 valores.push(projeto[key]);
                 cmdSql += `${key} = ?, `;
+            }
+            else{
+                if(key == 'status')
+                    cmdSql += `status = JSON_MERGE_PRESERVE(JSON_ARRAY(JSON_OBJECT('status', '${projeto[key]}', 'data_alteracao', (SELECT CURRENT_TIMESTAMP), 'id_responsavel', '${loginId}')),status), `;
+                else {
+                    let aplic = JSON.stringify(projeto[key].splice(','));
+                    cmdSql += `aplicacao = '${aplic}', `;
+                } 
             }
         }
         cmdSql = cmdSql.replace(', id = ?,', '');
@@ -221,7 +238,7 @@ export const estruturarProjeto = (dados) => {
         return projetoExistente;
     }
 
-    const addEtapasProjeto = (etapa, projeto) => {
+    const addEtapasProjeto = (etapa, projeto) => {       
         let etapaExistente = projeto.etapas.find(e => e.id === etapa.etapa_id);
         if (!etapaExistente) {
             etapaExistente = {
@@ -231,9 +248,9 @@ export const estruturarProjeto = (dados) => {
                 "ordem": etapa.etapa_ordem,
                 "etapa_mp": []
             };
-            projeto.etapas.push(etapaExistente);
+            projeto.etapas.push(etapaExistente);            
         }
-        return etapaExistente;
+        return etapaExistente;        
     }
 
     const addEtapa_MpEtapas = (etapa_mp, etapa, projeto) => {
@@ -300,6 +317,18 @@ export const consultarPorId = async (id) => {
         cx.query("CALL projeto_marcarVisualizacao(?)", [id]);
         const cmdSql = 'SELECT * FROM projeto WHERE id = ?;';
         const [dados, meta_dados] = await cx.query(cmdSql, [id]);
+        cx.release();
+        return dados;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const consultarPorCodigo = async (codigo) => {
+    try {
+        const cx = await pool.getConnection();
+        const cmdSql = 'SELECT * FROM projeto WHERE codigo like ?;';
+        const [dados, meta_dados] = await cx.query(cmdSql, [codigo]);
         cx.release();
         return dados;
     } catch (error) {

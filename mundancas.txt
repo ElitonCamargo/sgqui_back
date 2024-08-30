@@ -1,3 +1,4 @@
-Adicionar um código para o projeto.
-Adicionar multiaplicações para o projeto (varchar para json).
-Criar consulta avançada para o projeto.
+✅ Criação do filtro avançado.
+✅ Adicionar um código para o projeto.
+✅ Adicionar multiaplicações para o projeto (varchar para json).
+9999

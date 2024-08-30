@@ -37,6 +37,16 @@ export const consultarPorId = async (req, res)=>{
     }
 }
 
+export const consultarPorCodigo = async (req, res)=>{    
+    try {
+        let codigo = req.params.codigo;
+        const data = await Projeto.consultarPorCodigo(codigo);
+        return View.result(res,'GET',data);
+    } catch (error) {
+        return View.erro(res, error);
+    }
+}
+
 export const duplicar = async (req, res)=>{    
     try {
         let id = req.params.id;
