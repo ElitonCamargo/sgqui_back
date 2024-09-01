@@ -218,6 +218,7 @@ export const estruturarProjeto = (dados) => {
         if (!projetoExistente) {
             projetoExistente = {
                 "id": projeto.projeto_id,
+                "codigo": projeto.projeto_codigo,
                 "nome": projeto.projeto_nome,
                 "descricao": projeto.projeto_descricao,
                 "data_inicio": projeto.projeto_data_inicio,
@@ -231,7 +232,10 @@ export const estruturarProjeto = (dados) => {
                 "etapas": [],
                 "nutrientes": [],
                 "percentual_concluido": 0,
-                "dencidade_estimada": 0
+                "dencidade_estimada": 0,
+                "createdAt": projeto.projeto_createdAt,
+                "updatedAt": projeto.projeto_updatedAt
+
             };
             projetos.push(projetoExistente);
         }
@@ -264,6 +268,7 @@ export const estruturarProjeto = (dados) => {
                     "percentual": etapa_mp.etapa_mp_percentual,
                     "tempo_agitacao": etapa_mp.etapa_mp_tempo_agitacao,
                     "observacao": etapa_mp.etapa_mp_observacao,
+                    "lote": etapa_mp.etapa_mp_lote,
                     "ordem": etapa_mp.etapa_mp_ordem
                 });
                 projeto.dencidade_estimada += etapa_mp.parcial_densidade || 0;
