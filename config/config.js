@@ -2,7 +2,7 @@
 const developmentConfig = {
     host: "100.26.59.163",
     port: 3306,
-    name: "api_sg_qui_dev",
+    name: "api_sg_qui",
     dialect: "mysql",
     user: "admin_api",
     password: "%gt&j7&gfE0u1895"
@@ -11,7 +11,7 @@ const developmentConfig = {
 const productionConfig = {
     host: process.env.DB_HOST || '100.26.59.163',
     port: parseInt(process.env.DB_PORT || '3306', 10),
-    name: process.env.BD_NAME || 'api_sg_qui_dev',
+    name: process.env.BD_NAME || 'api_sg_qui',
     dialect: process.env.BD_DIALECT || 'mysql',
     user: process.env.BD_USER || 'admin_api',
     password: process.env.BD_PASS || '%gt&j7&gfE0u1895'
