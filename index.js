@@ -43,6 +43,7 @@ app.get('/',(req,res)=>{
             `${rootDomain}/etepa_mp`,
             `${rootDomain}/configuracao`,
             `${rootDomain}/upload`,
+            `${process.env.BD_NAME}`
         ]
     });
 });
