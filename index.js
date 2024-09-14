@@ -30,7 +30,7 @@ app.get('/',(req,res)=>{
     res.status(200).json({     
         status_server: 'ok',
         dominio_raiz : rootDomain,
-        atualização: '04/09/2024 - 19:35',
+        atualização: '14/09/2024 - 19:35',
         rotas:[
             `${rootDomain}/usuario/login`,
             `${rootDomain}/usuario`,
@@ -42,7 +42,7 @@ app.get('/',(req,res)=>{
             `${rootDomain}/etepa`,
             `${rootDomain}/etepa_mp`,
             `${rootDomain}/configuracao`,
-            `${rootDomain}/upload`,
+            `${rootDomain}/upload`
         ]
     });
 });
