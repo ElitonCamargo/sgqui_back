@@ -15,16 +15,18 @@ export const cadastrar = async (etapa_mp={}) => {
         columns = columns.slice(0, -1);
         placeholders = placeholders.slice(0, -2);
 
-        const cmdSql = `INSERT INTO etapa_mp (${columns}) VALUES (${placeholders});`;
+        let cmdSql = `INSERT INTO etapa_mp (${columns}) VALUES (${placeholders})`;
+        cmdSql += `ON DUPLICATE KEY UPDATE percentual = VALUES(percentual);`;
                 
         const cx = await pool.getConnection();
 
         await cx.query(cmdSql, values);
 
-        const [result] = await cx.query('SELECT LAST_INSERT_ID() as lastId');
-        const lastId = result[0].lastId;
+        //const [result] = await cx.query('SELECT LAST_INSERT_ID() as lastId');
+        //const lastId = result[0].lastId;
 
-        const [dados] = await cx.query('SELECT * FROM etapa_mp WHERE id = ?;', [lastId]);
+        // const [dados] = await cx.query('SELECT * FROM etapa_mp WHERE id = ?;', [lastId]);
+        const [dados] = await cx.query('SELECT * FROM etapa_mp WHERE etapa = ? and mp = ?;', [values[0], values[1]]);
 
         cx.release();
 

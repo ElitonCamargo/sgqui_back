@@ -5,6 +5,5 @@
       "vercel.json":true,
       "README.md":true,
       ".gitignore":true,
-
     }
   }

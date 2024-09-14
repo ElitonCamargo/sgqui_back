@@ -4,21 +4,24 @@ export const cadastrar = async (projeto={},loginId=0) => {
     try {
         let valores = [];
         let campos = '';
-        let placeholders = '';        
+        let placeholders = '';
+        
+        if('status' in projeto){
+            campos += 'status,'
+            placeholders += `JSON_ARRAY(JSON_OBJECT('status',  '${projeto['status']}', 'data_alteracao', (SELECT CURRENT_TIMESTAMP), 'id_responsavel', '${loginId}')),`;
+            delete projeto['status'];
+        }
+        if('aplicacao' in projeto){
+            campos += 'aplicacao,'
+            let aplic = JSON.stringify(projeto['aplicacao'].splice(','));
+            placeholders += `'${aplic}', `;
+            delete projeto['aplicacao'];
+        }   
+
         for(const key in projeto){
             campos += `${key},`;            
-            if(!(key == 'status' || key == 'aplicacao')){                
-                placeholders += '?,';
-                valores.push(projeto[key]);
-            }
-            else{
-                if(key == 'status')
-                    placeholders += `JSON_ARRAY(JSON_OBJECT('status',  '${projeto[key]}', 'data_alteracao', (SELECT CURRENT_TIMESTAMP), 'id_responsavel', '${loginId}')),`;
-                else {
-                    let aplic = JSON.stringify(projeto[key].splice(','));
-                    placeholders += `'${aplic}', `;
-                } 
-            }
+            placeholders += '?,';
+            valores.push(projeto[key]);            
         }
         campos = campos.slice(0, -1);
         placeholders = placeholders.slice(0, -1);
@@ -54,31 +57,28 @@ export const alterar = async (projeto={},loginId=0) => {
     try {
         let valores = [];
         let cmdSql = 'UPDATE projeto SET ';
-        for(const key in projeto){
-            // if(key == 'status'){
-            //     cmdSql += `status = JSON_MERGE_PRESERVE(JSON_ARRAY(JSON_OBJECT('status', '${projeto[key]}', 'data_alteracao', (SELECT CURRENT_TIMESTAMP), 'id_responsavel', '${loginId}')),status), `;
-            // }
-            // else{
-            //     valores.push(projeto[key]);
-            //     cmdSql += `${key} = ?, `;
-            // }
 
-            if(!(key == 'status' || key == 'aplicacao')){                
-                valores.push(projeto[key]);
-                cmdSql += `${key} = ?, `;
-            }
-            else{
-                if(key == 'status')
-                    cmdSql += `status = JSON_MERGE_PRESERVE(JSON_ARRAY(JSON_OBJECT('status', '${projeto[key]}', 'data_alteracao', (SELECT CURRENT_TIMESTAMP), 'id_responsavel', '${loginId}')),status), `;
-                else {
-                    let aplic = JSON.stringify(projeto[key].splice(','));
-                    cmdSql += `aplicacao = '${aplic}', `;
-                } 
-            }
+        if('status' in projeto){
+            cmdSql += `status = JSON_MERGE_PRESERVE(JSON_ARRAY(JSON_OBJECT('status', '${projeto['status']}', 'data_alteracao', (SELECT CURRENT_TIMESTAMP), 'id_responsavel', '${loginId}')),status), `;
+            delete projeto['status'];
         }
+        if('aplicacao' in projeto){
+            let aplic = JSON.stringify(projeto['aplicacao'].splice(','));
+            cmdSql += `aplicacao = '${aplic}', `;
+            delete projeto['aplicacao'];
+        }
+        else{
+            cmdSql += `aplicacao = null, `;
+        }
+
+        for(const key in projeto){
+            valores.push(projeto[key]);
+            cmdSql += `${key} = ?, `;
+        }
+
         cmdSql = cmdSql.replace(', id = ?,', '');
         cmdSql += 'WHERE id = ?;';
-        const cx = await pool.getConnection();     
+        const cx = await pool.getConnection();  
         const [execucao] = await cx.query(cmdSql, valores);
         if(execucao.affectedRows > 0){
             const [dados, meta_dados] = await cx.query('SELECT * FROM projeto WHERE id = ?;', projeto.id);
@@ -220,6 +220,7 @@ export const estruturarProjeto = (dados) => {
                 "id": projeto.projeto_id,
                 "codigo": projeto.projeto_codigo,
                 "nome": projeto.projeto_nome,
+                "cliente": projeto.projeto_cliente,
                 "descricao": projeto.projeto_descricao,
                 "data_inicio": projeto.projeto_data_inicio,
                 "data_termino": projeto.projeto_data_termino,
@@ -252,7 +253,9 @@ export const estruturarProjeto = (dados) => {
                 "ordem": etapa.etapa_ordem,
                 "etapa_mp": []
             };
-            projeto.etapas.push(etapaExistente);            
+            if(etapaExistente.id){
+                projeto.etapas.push(etapaExistente);    
+            }
         }
         return etapaExistente;        
     }
@@ -306,12 +309,12 @@ export const estruturarProjeto = (dados) => {
             let etapa_referenciada = addEtapasProjeto(elemento, projeto_referenciado);
             addEtapa_MpEtapas(elemento, etapa_referenciada, projeto_referenciado);
             addNutrientes(elemento, projeto_referenciado);
-
             // Atualizar percentual_concluido e densidade_estimada
             projeto_referenciado.percentual_concluido = projeto_referenciado.etapas.reduce((total, etapa) => 
                 total + etapa.etapa_mp.reduce((subtotal, mp) => subtotal + mp.percentual, 0), 0);
         }
     }
+    //console.log(projetos[0].etapas);
     return projetos;
 };
 
