@@ -287,6 +287,7 @@ export const estruturarProjeto = (dados) => {
                     "id": nutriente.nutriente_id,
                     "nome": nutriente.nutriente_nome,
                     "formula": nutriente.nutriente_formula,
+                    "visivel": nutriente.nutriente_visivel,
                     "percentual": nutriente.percentual_origem,
                     "origem": [{
                         "mp": nutriente.materia_prima_nome,
