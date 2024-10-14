@@ -109,7 +109,7 @@ export const alterar = async (usuario) => {
 
 export const deletar = async (id) => {
     try {
-        const cmdSql = 'DELETE FROM garantia WHERE id = ?;';
+        const cmdSql = 'DELETE FROM usuario WHERE id = ?;';
         const cx = await pool.getConnection();
         const [dados, meta_dados] = await cx.query(cmdSql, [id]);
         cx.release();

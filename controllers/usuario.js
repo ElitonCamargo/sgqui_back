@@ -35,7 +35,17 @@ export const consultarPorId = async (req, res)=>{
     try {
         const id = req.params.id;
         const data = await Usuario.consultarPorId(id);
-        View.result(res,'GET',data);
+        return View.result(res,'GET',data);
+    } catch (error) {
+        View.erro(res, error);
+    }
+}
+
+export const deletar = async (req, res)=>{
+    try {
+        const id = req.params.id;
+        const data = await Usuario.deletar(id);
+        return View.result(res,'DELETE',data);
     } catch (error) {
         View.erro(res, error);
     }
@@ -65,7 +75,7 @@ export const consultar = async (req, res)=>{
         else{
             data = await Usuario.consultar();
         }
-        View.result(res,'GET',data);
+        return View.result(res,'GET',data);
     } catch (error) {
         View.erro(res, error);
     }
@@ -86,7 +96,7 @@ export const alterar = async (req, res)=>{
         let usuario = req.body;
         usuario.id = req.params.id;
         const usuarioAlterado = await Usuario.alterar(usuario);
-        View.result(res, 'PUT',usuarioAlterado);
+        return View.result(res, 'PUT',usuarioAlterado);
     } catch (error) {
         View.erro(res,error);
     }

@@ -6,6 +6,7 @@ const router = express.Router();
 router.get('/usuario/logado',usuario.consultarLogado);
 router.get('/usuario',usuario.consultar);
 router.get('/usuario/:id',usuario.consultarPorId);
+router.delete('/usuario/:id',usuario.deletar);
 router.put('/usuario/:id',usuario.alterar);
 router.post('/usuario',usuario.cadastrar);
 
