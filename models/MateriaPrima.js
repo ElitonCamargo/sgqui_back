@@ -9,6 +9,8 @@ export const consultar = async (filtro = '') => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -22,6 +24,8 @@ export const consultarPorId = async (id) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -34,6 +38,8 @@ export const consultarPorCodigo = async (codigo) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -46,6 +52,8 @@ export const consultarPorCas_number = async (cas_number) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -58,6 +66,8 @@ export const consultarPorFormula = async (formula) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -70,6 +80,8 @@ export const consultarMP_precentual_nutriente = async (nutriente=0,percentual=0.
         return dados[0];
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -100,6 +112,8 @@ export const cadastrar = async (materia_prima) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -125,6 +139,8 @@ export const alterar = async (materia_prima) => {
 
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -137,6 +153,8 @@ export const deletar = async (id) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 

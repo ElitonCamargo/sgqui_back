@@ -10,6 +10,8 @@ export const consultar = async (token) => {
         return dados[0][0];
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -27,6 +29,8 @@ export const criar = async (usuario,validade,chave_token=new Date()) => {
         return false;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -39,5 +43,7 @@ export const extender = async (usuario,tempo_horas) => {
         return dados.affectedRows > 0;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };

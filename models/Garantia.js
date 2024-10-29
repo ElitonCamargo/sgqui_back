@@ -24,6 +24,8 @@ export const consultarPorNutriente = async (nutrienteId) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -47,6 +49,8 @@ export const consultarPorMateria_prima = async (materia_primaId) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -66,6 +70,8 @@ export const cadastrar = async (garantia) => {
 
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -84,6 +90,8 @@ export const atualizar = async (garantia) => {
         return [];
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -96,5 +104,7 @@ export const deletar = async (id) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };

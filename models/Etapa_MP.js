@@ -33,6 +33,8 @@ export const cadastrar = async (etapa_mp={}) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -66,6 +68,8 @@ export const alterar = async (etapa_mp={}) => {
 
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -78,6 +82,8 @@ export const consultarPorEtapa = async (id_etapa) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -95,6 +101,8 @@ export const consultarPorId = async (id) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -142,6 +150,8 @@ export const deletar = async (id) => {
         }
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -172,5 +182,7 @@ export const alterarOrdem = async (ordemetapa_mp = []) => {
         }
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };

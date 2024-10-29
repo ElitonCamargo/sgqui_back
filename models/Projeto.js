@@ -37,6 +37,8 @@ export const cadastrar = async (projeto={},loginId=0) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -50,6 +52,8 @@ export const duplicar = async (id = 0) => {
         return dados[0];
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -90,6 +94,8 @@ export const alterar = async (projeto={},loginId=0) => {
 
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -102,6 +108,8 @@ export const consultar = async (filtro = '') => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -208,6 +216,8 @@ export const consultarFiltroAvacado = async (filtro = []) => {
 
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -330,6 +340,8 @@ export const consultarPorId = async (id) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -342,6 +354,8 @@ export const consultarPorCodigo = async (codigo) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -361,6 +375,8 @@ export const consultarPorData = async (data_inicio="", data_termino="") => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -374,6 +390,8 @@ export const consultarPorStatus = async (status='') => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -386,6 +404,8 @@ export const deletar = async (id) => {
         return dados;
     } catch (error) {
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -400,7 +420,8 @@ export const consultaDetalhada = async (id) => {
         cx.release();
         return estruturarProjeto(dados);
     } catch (error) {
-        console.error(error);
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };

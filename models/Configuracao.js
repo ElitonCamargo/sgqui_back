@@ -13,6 +13,8 @@ export const cadastrar = async (configuracao) => {
         return dados;
     } catch (error) {
         throw error;
+    }finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -34,6 +36,8 @@ export const alterar = async (configuracao) => {
         return [];
     } catch (error) {
         throw error;
+    }finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -45,6 +49,8 @@ export const consultar = async () => {
         return dados;
     } catch (error) {
         throw error;
+    }finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -56,6 +62,8 @@ export const consultarPorId = async (id) => {
         return dados;
     } catch (error) {
         throw error;
+    }finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -67,6 +75,8 @@ export const consultarPorKey = async (key) => {
         return dados;
     } catch (error) {
         throw error;
+    }finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -79,5 +89,7 @@ export const deletar = async (id) => {
         return dados;
     } catch (error) {
         throw error;
+    }finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };

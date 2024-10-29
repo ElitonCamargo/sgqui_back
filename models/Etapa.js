@@ -40,8 +40,9 @@ export const cadastrar = async (etapa={}) => {
         // Retorna os dados obtidos na consulta.
         return dados;
     } catch (error) {
-        // Lança qualquer erro que ocorra durante a execução das operações.
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -86,8 +87,9 @@ export const alterar = async (etapa={}) => {
         return [];
 
     } catch (error) {
-        // Lança qualquer erro que ocorra durante a execução das operações.
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -147,6 +149,8 @@ export const consultarPorId = async (id) => {
     } catch (error) {
         // Lança qualquer erro que ocorra durante a execução das operações.
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -170,6 +174,8 @@ export const consultarPorProjeto = async (id_projeto) => {
     } catch (error) {
         // Lança qualquer erro que ocorra durante a execução das operações.
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
@@ -221,5 +227,7 @@ export const deletar = async (id) => {
     } catch (error) {
         // Lança qualquer erro que ocorra durante a execução das operações.
         throw error;
+    } finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
