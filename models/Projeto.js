@@ -1,6 +1,7 @@
 import pool from '../database/data.js';
 
 export const cadastrar = async (projeto={},loginId=0) => {    
+    let cx;
     try {
         let valores = [];
         let campos = '';
@@ -26,38 +27,41 @@ export const cadastrar = async (projeto={},loginId=0) => {
         campos = campos.slice(0, -1);
         placeholders = placeholders.slice(0, -1);
         const cmdSql = `INSERT INTO projeto (${campos}) VALUES (${placeholders});`;        
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         await cx.query(cmdSql, valores);
 
         const [result] = await cx.query('SELECT LAST_INSERT_ID() as lastId');
         const lastId = result[0].lastId;
 
         const [dados, meta_dados] = await cx.query('SELECT * FROM projeto WHERE id = ?;', [lastId]);
-        cx.release();
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const duplicar = async (id = 0) => {
+    let cx;
     try {
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const cmdSql = 'CALL duplicar_projeto(?)';
         const [dados] = await cx.query(cmdSql, [id]);
-        
-        cx.release();
         return dados[0];
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const alterar = async (projeto={},loginId=0) => {
+    let cx;
     try {
         let valores = [];
         let cmdSql = 'UPDATE projeto SET ';
@@ -82,33 +86,35 @@ export const alterar = async (projeto={},loginId=0) => {
 
         cmdSql = cmdSql.replace(', id = ?,', '');
         cmdSql += 'WHERE id = ?;';
-        const cx = await pool.getConnection();  
+        cx = await pool.getConnection();  
         const [execucao] = await cx.query(cmdSql, valores);
         if(execucao.affectedRows > 0){
             const [dados, meta_dados] = await cx.query('SELECT * FROM projeto WHERE id = ?;', projeto.id);
-            cx.release();
             return dados;
         }
-        cx.release();
         return [];
 
-    } catch (error) {
+    }
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const consultar = async (filtro = '') => {
+    let cx;
     try {        
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const cmdSql = 'SELECT * FROM projeto WHERE nome LIKE ? or descricao LIKE ? ORDER BY updatedAt DESC;';
         const [dados, meta_dados] = await cx.query(cmdSql, [`%${filtro}%`,`%${filtro}%`]);
-        cx.release();
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
@@ -158,6 +164,7 @@ const filtroAvancado = (projetos=[], filtroConsulta)=>{
 }
 
 export const consultarFiltroAvacado = async (filtro = []) => {
+    let cx;
     try {
         let filtroConsulta = {
             materia_prima:[], 
@@ -205,18 +212,19 @@ export const consultarFiltroAvacado = async (filtro = []) => {
         `;
 
         // Executar a consulta no banco de dados
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const [dados, meta_dados] = await cx.query(cmdSql.trim());
-        cx.release();
         let projetos = estruturarProjeto(dados);        
         let IDs_projeto_compativeis = filtroAvancado(projetos, filtroConsulta);
         return projetos.filter(projeto=>{
             return IDs_projeto_compativeis.some(id => id == projeto.id);
         })
 
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
@@ -331,37 +339,42 @@ export const estruturarProjeto = (dados) => {
 
 
 export const consultarPorId = async (id) => {
+    let cx;
     try {
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         cx.query("CALL projeto_marcarVisualizacao(?)", [id]);
         const cmdSql = 'SELECT * FROM projeto WHERE id = ?;';
         const [dados, meta_dados] = await cx.query(cmdSql, [id]);
-        cx.release();
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const consultarPorCodigo = async (codigo) => {
+    let cx;
     try {
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const cmdSql = 'SELECT * FROM projeto WHERE codigo like ?;';
         const [dados, meta_dados] = await cx.query(cmdSql, [codigo]);
-        cx.release();
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const consultarPorData = async (data_inicio="", data_termino="") => {
+    let cx;
     try {
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const cmdSql = `
         SELECT * FROM projeto
         WHERE (data_inicio BETWEEN '${data_inicio}' AND '${data_termino}')
@@ -371,40 +384,45 @@ export const consultarPorData = async (data_inicio="", data_termino="") => {
         ;
         `;
         const [dados, meta_dados] = await cx.query(cmdSql);
-        cx.release();
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 
 export const consultarPorStatus = async (status='') => {
+    let cx;
     try {
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const cmdSql = `SELECT * FROM projeto WHERE JSON_UNQUOTE(JSON_EXTRACT(status, '$[0].status')) LIKE ? ORDER BY updatedAt DESC;`; 
         const [dados, meta_dados] = await cx.query(cmdSql,[status]);
-        cx.release();
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const deletar = async (id) => {
+    let cx;
     try {
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const cmdSql = 'DELETE FROM projeto WHERE id = ?;';
         const [dados, meta_dados] = await cx.query(cmdSql, [id]);
-        cx.release();
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
@@ -412,16 +430,18 @@ export const deletar = async (id) => {
 // *************** Consultas Entre vária entidades ***********************
 
 export const consultaDetalhada = async (id) => {
+    let cx;
     try { 
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         cx.query("CALL projeto_marcarVisualizacao(?)", [id]);
         const cmdSql = 'SELECT * FROM projeto_detalhado WHERE projeto_id = ?;';
         const [dados, meta_dados] = await cx.query(cmdSql, [id]);
-        cx.release();
         return estruturarProjeto(dados);
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };

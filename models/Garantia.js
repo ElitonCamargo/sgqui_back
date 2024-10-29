@@ -1,8 +1,9 @@
 import pool from '../database/data.js';
 
 export const consultarPorNutriente = async (nutrienteId) => {
+    let cx;
     try {
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const cmdSql = `SELECT 
             materia_prima.id as materia_prima_Id,
             materia_prima.nome as materia_prima_Nome,
@@ -20,18 +21,20 @@ export const consultarPorNutriente = async (nutrienteId) => {
         WHERE
             garantia.nutriente = ?;`;
         const [dados, meta_dados] = await cx.query(cmdSql, [nutrienteId]);
-        cx.release();
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const consultarPorMateria_prima = async (materia_primaId) => {
+    let cx;
     try {
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const cmdSql = `SELECT
             nutriente.id as nutriente_Id,
             nutriente.nome as nutriente_Nome,
@@ -45,66 +48,72 @@ export const consultarPorMateria_prima = async (materia_primaId) => {
         WHERE
             garantia.materia_prima = ?;`;
         const [dados, meta_dados] = await cx.query(cmdSql, [materia_primaId]);
-        cx.release();
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const cadastrar = async (garantia) => {
+    let cx;
     try {
         const { materia_prima, nutriente, percentual } = garantia;
         const cmdSql = 'INSERT INTO garantia (materia_prima, nutriente, percentual) VALUES (?, ?, ?);';
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         await cx.query(cmdSql, [materia_prima, nutriente, percentual]);
 
         const [result] = await cx.query('SELECT LAST_INSERT_ID() as lastId');
         const lastId = result[0].lastId;
  
         const [dados, meta_dados] = await cx.query('SELECT * FROM garantia WHERE id = ?;', [lastId]);
-        cx.release();
         return dados;
 
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const atualizar = async (garantia) => {
+    let cx;
     try {
         const { percentual, id } = garantia;
         const cmdSql = 'UPDATE garantia SET percentual = ? WHERE id = ?;';
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const [execucao] = await cx.query(cmdSql, [percentual, id]);
         if(execucao.affectedRows > 0){
             const [dados, meta_dados] = await cx.query('SELECT * FROM garantia WHERE id = ?;', id);
-            cx.release();
             return dados;
         }
-        cx.release();
         return [];
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const deletar = async (id) => {
+    let cx;
     try {
         const cmdSql = 'DELETE FROM garantia WHERE id = ?;';
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const [dados, meta_dados] = await cx.query(cmdSql, [id]);
-        cx.release();
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };

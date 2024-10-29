@@ -2,6 +2,7 @@ import pool from '../database/data.js';
 // **************** Tenho que alterar o cadastrar para sempre colocar a quantidade de itens cadastrados por etapa + 1;
 // Define e exporta uma função assíncrona chamada 'cadastrar', que recebe 'etapa' (um objeto com valores padrão vazio)
 export const cadastrar = async (etapa={}) => {
+    let cx;
     try {
         let values = [];       // Cria um array vazio para armazenar os valores dos campos do objeto 'etapa'.
         let columns = '';      // Cria uma string vazia para armazenar os nomes das colunas.
@@ -22,7 +23,7 @@ export const cadastrar = async (etapa={}) => {
         const cmdSql = `INSERT INTO etapa (${columns}) VALUES (${placeholders});`;
                 
         // Obtém uma conexão do pool de conexões.
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
 
         // Executa a consulta SQL para inserir os valores na tabela 'etapa'.
         await cx.query(cmdSql, values);
@@ -34,14 +35,13 @@ export const cadastrar = async (etapa={}) => {
         // Executa uma consulta SQL para selecionar todos os dados da tabela 'etapa' onde o ID é igual ao último ID inserido.
         const [dados, meta_dados] = await cx.query('SELECT * FROM etapa WHERE id = ?;', [lastId]);
 
-        // Libera a conexão de volta para o pool.
-        cx.release();
-
         // Retorna os dados obtidos na consulta.
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
@@ -49,6 +49,7 @@ export const cadastrar = async (etapa={}) => {
 
 // Define e exporta uma função assíncrona chamada 'alterar', que recebe um parâmetro 'etapa' (um objeto com valor padrão vazio).
 export const alterar = async (etapa={}) => {
+    let cx;
     try {
         let values = [];                 // Cria um array vazio para armazenar os valores dos campos do objeto 'etapa'.
         let columns_placeholders = '';   // Cria uma string vazia para armazenar os pares coluna-placeholder ('coluna=?') para a consulta SQL.
@@ -67,7 +68,7 @@ export const alterar = async (etapa={}) => {
         const cmdSql = `UPDATE etapa SET ${columns_placeholders} WHERE id = ?`;
 
         // Obtém uma conexão do pool de conexões.
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
 
         // Executa a consulta SQL para atualizar os valores na tabela 'etapa'.
         const [execucao] = await cx.query(cmdSql, values);
@@ -76,25 +77,25 @@ export const alterar = async (etapa={}) => {
         if(execucao.affectedRows > 0){
             // Se sim, executa uma consulta SQL para selecionar todos os dados da tabela 'etapa' onde o ID é igual ao 'id' do objeto 'etapa'.
             const [dados, meta_dados] = await cx.query('SELECT * FROM etapa WHERE id = ?;', [etapa.id]);
-            // Libera a conexão de volta para o pool.
-            cx.release();
+ 
             // Retorna os dados obtidos na consulta.
             return dados;
         }
-        // Libera a conexão de volta para o pool.
-        cx.release();
         // Se nenhuma linha foi afetada, retorna um array vazio.
         return [];
 
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 // Define e exporta uma função assíncrona chamada 'alterarOrdem', que reorganiza a ordem das etapas dentro de um projeto.
 export const alterarOrdem = async (ordemEtapa = []) => {
+    let cx;
     try {
         // Converte a lista de etapas para JSON
         let ordemEtapaJson = ordemEtapa;
@@ -104,36 +105,33 @@ export const alterarOrdem = async (ordemEtapa = []) => {
         }
 
         // Obtém uma conexão do pool de conexões.
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
 
         try {
             // Executa a stored procedure com o JSON de etapas como argumento.
             const cmdSql = `CALL etapa_alterarOrdem(?)`;
             await cx.query(cmdSql, [ordemEtapaJson]);
 
-            // Libera a conexão de volta para o pool.
-            cx.release();
-
             // Se a execução foi bem-sucedida, retorna a lista de etapas.
             return ordemEtapa;
         } catch (err) {
-            // Libera a conexão de volta para o pool em caso de erro.
-            cx.release();
-            // Lança o erro para ser tratado pelo bloco externo.
             throw err;
         }
 
     } catch (error) {
-        // Lança qualquer erro que ocorra durante a execução das operações.
         throw error;
+    }
+    finally {
+        if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 // Define e exporta uma função assíncrona chamada 'consultarPorId', que recebe um parâmetro 'id'.
 export const consultarPorId = async (id) => {
+    let cx;
     try {
         // Obtém uma conexão do pool de conexões.
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         
         // Cria uma string de comando SQL para selecionar todos os dados da tabela 'etapa' onde o ID é igual ao 'id' fornecido.
         const cmdSql = 'SELECT * FROM etapa WHERE id = ?;';
@@ -141,24 +139,24 @@ export const consultarPorId = async (id) => {
         // Executa a consulta SQL com o 'id' fornecido como parâmetro.
         const [dados, meta_dados] = await cx.query(cmdSql, [id]);
         
-        // Libera a conexão de volta para o pool.
-        cx.release();
-        
         // Retorna os dados obtidos na consulta.
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         // Lança qualquer erro que ocorra durante a execução das operações.
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 // Define e exporta uma função assíncrona chamada 'consultarPorProjeto', que recebe um parâmetro 'id_projeto'.
 export const consultarPorProjeto = async (id_projeto) => {
+    let cx;
     try {
         // Obtém uma conexão do pool de conexões.
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         
         // Cria uma string de comando SQL para selecionar todos os dados da tabela 'etapa' onde o projeto é igual ao 'id_projeto' fornecido.
         const cmdSql = 'SELECT * FROM etapa WHERE etapa.projeto = ? ORDER BY etapa.ordem ASC;';
@@ -166,24 +164,23 @@ export const consultarPorProjeto = async (id_projeto) => {
         // Executa a consulta SQL com o 'id_projeto' fornecido como parâmetro.
         const [dados, meta_dados] = await cx.query(cmdSql, [id_projeto]);
         
-        // Libera a conexão de volta para o pool.
-        cx.release();
-        
         // Retorna os dados obtidos na consulta.
         return dados;
-    } catch (error) {
-        // Lança qualquer erro que ocorra durante a execução das operações.
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 // Define e exporta uma função assíncrona chamada 'deletar', que remove uma etapa do banco de dados.
 export const deletar = async (id) => {
+    let cx;
     try {
         // Obtém uma conexão do pool de conexões.
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         try {
             // Inicia uma transação.
             await cx.beginTransaction();
@@ -210,9 +207,6 @@ export const deletar = async (id) => {
             // Confirma a transação.
             await cx.commit();
 
-            // Libera a conexão de volta para o pool.
-            cx.release();
-
             // Retorna o resultado da operação de exclusão.
             return execucaoDelete;
 
@@ -220,8 +214,6 @@ export const deletar = async (id) => {
             // Em caso de erro, desfaz todas as alterações da transação.
             await cx.rollback();
             // Libera a conexão de volta para o pool.
-            cx.release();
-            // Lança o erro para ser tratado pelo bloco externo.
             throw err;
         }
     } catch (error) {

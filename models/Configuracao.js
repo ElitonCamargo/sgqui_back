@@ -1,95 +1,106 @@
 import pool from '../database/data.js';
 
 export const cadastrar = async (configuracao) => {
+    let cx;
     try {
         const { key, value } = configuracao;
         const cmdSql = 'INSERT INTO configuracao (`key`, `value`) VALUES (?,?);';
         
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         await cx.query(cmdSql, [key, JSON.stringify(value)]);
 
         const [dados] = await cx.query('SELECT * FROM configuracao WHERE `key` = ?;', [key]);
-        cx.release();
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    }finally {
+    }
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const alterar = async (configuracao) => {
+    let cx;
     try {
         const { key, value, id } = configuracao;
         const cmdSql = 'UPDATE configuracao SET `key`=?, `value`=? WHERE id = ?';
 
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
 
         const [execucao] = await cx.query(cmdSql, [key, JSON.stringify(value),id]);
 
         if(execucao.affectedRows > 0){
             const [dados, meta_dados] = await cx.query('SELECT * FROM configuracao WHERE id = ?;', [id]);
-            cx.release();
             return dados;
         }
-        cx.release();
         return [];
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    }finally {
+    }
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const consultar = async () => {
+    let cx;
     try {
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const [dados, meta_dados] = await cx.query('SELECT * FROM configuracao');
-        cx.release();
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    }finally {
+    }
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const consultarPorId = async (id) => {
+    let cx;
     try {
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const [dados, meta_dados] = await cx.query('SELECT * FROM configuracao WHERE id = ?;', [id]);
-        cx.release();
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    }finally {
+    }
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const consultarPorKey = async (key) => {
+    let cx;
     try {
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const [dados, meta_dados] = await cx.query('SELECT * FROM configuracao WHERE `key` = ?;', [key]);
-        cx.release();
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    }finally {
+    }
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 
 export const deletar = async (id) => {
+    let cx;
     try {
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         const [dados, meta_dados] = await cx.query('DELETE FROM configuracao WHERE id = ?;', [id]);
-        cx.release();
         return dados;
-    } catch (error) {
+    }
+    catch (error) {
         throw error;
-    }finally {
+    }
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };

@@ -1,6 +1,7 @@
 import pool from '../database/data.js';
 
 export const cadastrar = async (etapa_mp={}) => {
+    let cx;
     try {
         let values = [];       
         let columns = '';      
@@ -18,7 +19,7 @@ export const cadastrar = async (etapa_mp={}) => {
         let cmdSql = `INSERT INTO etapa_mp (${columns}) VALUES (${placeholders})`;
         cmdSql += `ON DUPLICATE KEY UPDATE percentual = VALUES(percentual);`;
                 
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
 
         await cx.query(cmdSql, values);
 
@@ -28,18 +29,18 @@ export const cadastrar = async (etapa_mp={}) => {
         // const [dados] = await cx.query('SELECT * FROM etapa_mp WHERE id = ?;', [lastId]);
         const [dados] = await cx.query('SELECT * FROM etapa_mp WHERE etapa = ? and mp = ?;', [values[0], values[1]]);
 
-        cx.release();
-
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
-
 export const alterar = async (etapa_mp={}) => {
+    let cx;
     try {
         let values = [];               
         let columns_placeholders = ''; 
@@ -54,62 +55,66 @@ export const alterar = async (etapa_mp={}) => {
 
         const cmdSql = `UPDATE etapa_mp SET ${columns_placeholders} WHERE id = ?`;
 
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
 
         const [execucao] = await cx.query(cmdSql, values);
 
         if(execucao.affectedRows > 0){
             const [dados] = await cx.query('SELECT * FROM etapa_mp WHERE id = ?;', [etapa_mp.id]);
-            cx.release();
             return dados;
         }
-        cx.release();
         return [];
 
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 export const consultarPorEtapa = async (id_etapa) => {
+    let cx;
     try {
-        const cx = await pool.getConnection();        
+        cx = await pool.getConnection();        
         const cmdSql = 'SELECT * FROM etapa_mp WHERE etapa_mp.etapa = ? ORDER BY etapa_mp.ordem ASC;';        
         const [dados] = await cx.query(cmdSql, [id_etapa]);        
-        cx.release();        
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 
 export const consultarPorId = async (id) => {
+    let cx;
     try {
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         
         const cmdSql = 'SELECT * FROM etapa_mp WHERE id = ?;';
         
         const [dados] = await cx.query(cmdSql, [id]);
-        
-        cx.release();
-        
+                
         return dados;
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
 
 
 export const deletar = async (id) => {
+    let cx;
     try {
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
         try {
             await cx.beginTransaction();
             let cmdSql = 'SELECT etapa, ordem FROM etapa_mp WHERE id = ?;';
@@ -139,13 +144,10 @@ export const deletar = async (id) => {
             console.log(execucaoDelete);
             await cx.commit();
 
-            cx.release();
-
             return execucaoDelete;
 
         } catch (err) {
             await cx.rollback();
-            cx.release();
             throw err;
         }
     } catch (error) {
@@ -157,6 +159,7 @@ export const deletar = async (id) => {
 
 
 export const alterarOrdem = async (ordemetapa_mp = []) => {
+    let cx;
     try {
         
         // Converte a lista de etapas para JSON
@@ -167,22 +170,20 @@ export const alterarOrdem = async (ordemetapa_mp = []) => {
             ordemetapa_mpJson = JSON.stringify(ordemetapa_mpJson);
         }
         
-        const cx = await pool.getConnection();
+        cx = await pool.getConnection();
 
         try {
             const cmdSql = `CALL etapa_mp_alterarOrdemMateriasPrimas(?)`;
             await cx.query(cmdSql, [ordemetapa_mpJson]);
-
-            cx.release();
-
             return ordemetapa_mp;
         } catch (err) {
-            cx.release();
             throw err;
         }
-    } catch (error) {
+    } 
+    catch (error) {
         throw error;
-    } finally {
+    } 
+    finally {
         if (cx) cx.release(); // Libere a conexão após o uso
     }
 };
