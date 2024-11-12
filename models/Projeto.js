@@ -285,6 +285,7 @@ export const estruturarProjeto = (dados) => {
                 etapa.etapa_mp.push({
                     "id": etapa_mp.etapa_mp_id,
                     "mp_id": etapa_mp.materia_prima_id,
+                    "mp_codigo": etapa_mp.materia_prima_codigo,
                     "materia_prima": etapa_mp.materia_prima_nome,
                     "percentual": etapa_mp.etapa_mp_percentual,
                     "tempo_agitacao": etapa_mp.etapa_mp_tempo_agitacao,
