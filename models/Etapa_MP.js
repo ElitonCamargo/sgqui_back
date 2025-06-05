@@ -17,7 +17,7 @@ export const cadastrar = async (etapa_mp={}) => {
         placeholders = placeholders.slice(0, -2);
 
         let cmdSql = `INSERT INTO etapa_mp (${columns}) VALUES (${placeholders})`;
-        cmdSql += `ON DUPLICATE KEY UPDATE percentual = VALUES(percentual);`;
+        // cmdSql += `ON DUPLICATE KEY UPDATE percentual = VALUES(percentual);`;
                 
         cx = await pool.getConnection();
 
