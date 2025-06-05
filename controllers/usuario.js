@@ -55,7 +55,7 @@ export const consultarLogado = async (req, res)=>{
     try {
         const id = req.loginId;
         const data = await Usuario.consultarPorId(id);
-        View.result(res,'GET',data);
+        return View.result(res,'GET',data);
     } catch (error) {
         View.erro(res, error);
     }
