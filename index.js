@@ -98,5 +98,5 @@ app.use((err, req, res, next) => {
 
 const PORT = 3000; 
 app.listen(PORT,()=>{
-    console.log('Sistema inicializado: ', `Acesso: http://localhost:${PORT}`);
+    console.log('API: ', `Rodando: ${PORT}`);
 });
